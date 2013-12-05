@@ -1,4 +1,5 @@
 #!/bin/bash
 cd $WORKSPACE
 rosws init . /opt/ros/hydro
+source ./setup.bash
 rosmake
