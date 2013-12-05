@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -e "manifest.xml" ]
+  ./rosmake_repo
+else
+  ./catkin_make_repo
+fi
