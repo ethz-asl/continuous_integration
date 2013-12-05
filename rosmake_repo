@@ -1,7 +1,3 @@
 #!/bin/bash
-cd $WORKSPACE
-rm .rosinstall
-rosws init . /opt/ros/hydro
-rosws set $REPO_NAME -y
-source ./setup.bash
-rosmake $REPO_NAME
+export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$WORKSPACE
+rosmake --all
