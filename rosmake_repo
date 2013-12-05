@@ -1,0 +1,3 @@
+#!/bin/bash
+rosws init . /opt/ros/groovy
+rosmake
