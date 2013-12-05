@@ -2,4 +2,5 @@
 cd $WORKSPACE
 rosws init . /opt/ros/hydro
 source ./setup.bash
-rosmake
+rosws set src -y
+rosmake --all
