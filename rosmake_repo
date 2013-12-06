@@ -1,13 +1,21 @@
 #!/bin/bash
 cd $WORKSPACE
-rm -rf ros_ws
-mkdir ros_ws
-rosws init ./ros_ws /opt/ros/hydro
-find . -type d -print0 | while IFS= read -r -d '' dir
-do  
-  if [ "$a" -ne "ros_ws" ] then
-    rosws set "$dir" -y
-  else
+export ROS_WS=$WORKSPACE/ros_ws
+rm -rf $ROS_WS
+mkdir $ROS_WS
+rosws init $ROS_WS /opt/ros/hydro
+for package in $(find ./ -type d)
+do
+  if [ -a "$package/manifest.xml" ]
+    then
+    echo "$package is a ros package."
+    cd $ROS_WS
+    if [ $package != "ros_ws" ]; then
+      rosws set ../$package -y
+    fi
   fi
+  cd $WORKSPACE
 done
-source ros_ws/setup.bash
+source $ROS_WS/setup.bash
+source $ROS_WS/setup.sh
+rosmake --all
