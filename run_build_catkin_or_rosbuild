@@ -1,6 +1,7 @@
 #!/bin/bash
-if [ -e "manifest.xml" ] || [ -e "stack.xml" ]
-  ./rosmake_repo
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ -e "manifest.xml" ] || [ -e "stack.xml" ]; then
+  $DIR/rosmake_repo
 else
-  ./catkin_make_repo
+  $DIR/catkin_make_repo
 fi
