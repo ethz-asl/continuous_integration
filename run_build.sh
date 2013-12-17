@@ -5,31 +5,29 @@ cd $DIR
 git pull
 cd $CWD
 
-OPTIND=1         # Reset in case getopts has been used previously in the shell.
+PACKAGE="--all"
+DEPENDENCIES=""
 
-# Store the package to build or otherwise build all with rosbuild:
-package_to_build="--all"
-
-while getopts "h?p:" opt; do
-    case "$opt" in
-    h|\?)
-        show_help
-        exit 0
-        ;;
-    p)  package_to_build=$OPTARG
-        ;;
-    esac
+for i in "$@"
+do
+case $i in
+    -p=*|--packages=*)
+    PACKAGES="${i#*=}"
+    ;;
+    -d=*|--dependencies=*)
+    DEPENDENCIES="${i#*=}"
+    ;;
+    *)
+       echo "Usage: run_build [{-d|--dependencies}=dependency.git] [{-p|--packages}=packages]"
+    ;;
+esac
 done
+echo PACKAGES = "${PACKAGES}"
+echo DEPENDENCIES = "${DEPENDENCIES}"
 
-shift $((OPTIND-1))
-
-[ "$1" = "--" ] && shift
-
-echo "package_to_build='$package_to_build', Leftovers: $@"
-
-for dependencies in "$@"
+for dependencies in ${DEPENDENCIES}
 do
     git clone "$dependencies"
 done
 
-$DIR/run_build_catkin_or_rosbuild $package_to_build
+$DIR/run_build_catkin_or_rosbuild ${PACKAGES}
