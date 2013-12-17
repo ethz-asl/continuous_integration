@@ -2,7 +2,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $WORKSPACE/src
 if [ -e "manifest.xml" ] || [ -e "stack.xml" ]; then
-  $DIR/rosmake_repo
+  $DIR/rosmake_repo $1
 else
-  $DIR/catkin_make_repo
+  $DIR/catkin_make_repo $1
 fi
