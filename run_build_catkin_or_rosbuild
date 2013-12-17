@@ -1,8 +1,11 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+echo "PACKAGES:" $@
+
 cd $WORKSPACE/src
 if [ -e "manifest.xml" ] || [ -e "stack.xml" ]; then
-  $DIR/rosmake_repo $1
+  $DIR/rosmake_repo $@
 else
-  $DIR/catkin_make_repo $1
+  $DIR/catkin_make_repo $@
 fi
