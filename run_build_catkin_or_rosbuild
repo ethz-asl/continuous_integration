@@ -7,5 +7,6 @@ cd $WORKSPACE/src
 if [ -e "manifest.xml" ] || [ -e "stack.xml" ]; then
   $DIR/rosmake_repo $@
 else
-  $DIR/catkin_make_repo $@
+  cd $WORKSPACE
+  $DIR/catkin_make_repo
 fi

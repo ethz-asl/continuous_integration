@@ -25,9 +25,11 @@ done
 echo PACKAGES = "${PACKAGES}"
 echo DEPENDENCIES = "${DEPENDENCIES}"
 
+mkdir -p $WORKSPACE/src && cd $WORKSPACE/src
 for dependencies in ${DEPENDENCIES}
 do
     git clone "$dependencies"
 done
+cd $WORKSPACE
 
 $DIR/run_build_catkin_or_rosbuild ${PACKAGES}
