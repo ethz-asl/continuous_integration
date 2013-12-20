@@ -28,9 +28,13 @@ echo DEPENDENCIES = "${DEPENDENCIES}"
 mkdir -p $WORKSPACE/src && cd $WORKSPACE/src
 for dependencies in ${DEPENDENCIES}
 do
-    if [ -d "$dependencies" ]; then
-      cd "$dependencies" && git pull && cd ..
+    foldername_w_ext=${dependencies##*/}
+    foldername=${foldername_w_ext%.*}
+    if [ -d $foldername ]; then
+      echo Folder "$foldername" exists, running git pull on "$dependencies"
+      cd "$foldername" && git pull && cd ..
     else
+      echo Folder "$foldername" does not exists, running git clone "$dependencies"
       git clone "$dependencies"
     fi    
 done
