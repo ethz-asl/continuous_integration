@@ -28,7 +28,7 @@ echo DEPENDENCIES = "${DEPENDENCIES}"
 mkdir -p $WORKSPACE/src && cd $WORKSPACE/src
 for dependencies in ${DEPENDENCIES}
 do
-    if [ -d "$DIRECTORY" ]; then
+    if [ -d "$dependencies" ]; then
       cd "$dependencies" && git pull && cd ..
     else
       git clone "$dependencies"
