@@ -4,7 +4,7 @@ export ROS_WS=$WORKSPACE/ros_ws
 rm -rf $ROS_WS
 mkdir $ROS_WS
 rosws init $ROS_WS /opt/ros/hydro
-for package in $(find ./ -type d)
+for package in $(find ./* -type d)
 do
   if [ -a "$package/manifest.xml" ]
     then
