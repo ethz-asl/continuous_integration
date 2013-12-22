@@ -1,8 +1,6 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-echo "PACKAGES:" $@
-
 cd $WORKSPACE/src
 if [ -e "manifest.xml" ] || [ -e "stack.xml" ]; then
   $DIR/rosmake_repo $@

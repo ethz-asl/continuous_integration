@@ -35,7 +35,7 @@ do
       cd "$foldername" && git pull && cd ..
     else
       echo Folder "$foldername" does not exists, running git clone "$dependencies"
-      git clone "$dependencies"
+      git clone "$dependencies" --recursive
     fi    
 done
 cd $WORKSPACE
