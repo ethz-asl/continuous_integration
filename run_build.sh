@@ -41,3 +41,7 @@ done
 cd $WORKSPACE
 
 $DIR/run_build_catkin_or_rosbuild ${PACKAGES}
+
+# Back to workspace run cppcheck.
+cd $CWD
+cppcheck > cppcheck-result.xml
