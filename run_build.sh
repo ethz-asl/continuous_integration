@@ -25,6 +25,8 @@ done
 echo PACKAGES = "${PACKAGES}"
 echo DEPENDENCIES = "${DEPENDENCIES}"
 
+CPPCHECK_PARAMS="--enable=all "
+
 mkdir -p $WORKSPACE/src && cd $WORKSPACE/src
 for dependencies in ${DEPENDENCIES}
 do
@@ -36,12 +38,13 @@ do
     else
       echo Folder "$foldername" does not exists, running git clone "$dependencies"
       git clone "$dependencies" --recursive
-    fi    
+    fi  
+    CPPCHECK_PARAMS="$CPPCHECK_PARAMS -i$foldername"
 done
 cd $WORKSPACE
 
 $DIR/run_build_catkin_or_rosbuild ${PACKAGES}
 
-# Back to workspace run cppcheck.
+# Run cppcheck excluding dependencies.
 cd $CWD
-cppcheck > cppcheck-result.xml
+cppcheck $CPPCHECK_PARAMS > cppcheck-result.xml
