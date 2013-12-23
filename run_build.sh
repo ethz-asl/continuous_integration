@@ -25,7 +25,7 @@ done
 echo PACKAGES = "${PACKAGES}"
 echo DEPENDENCIES = "${DEPENDENCIES}"
 
-CPPCHECK_PARAMS="--enable=all "
+CPPCHECK_PARAMS=". --enable=all "
 
 mkdir -p $WORKSPACE/src && cd $WORKSPACE/src
 for dependencies in ${DEPENDENCIES}
