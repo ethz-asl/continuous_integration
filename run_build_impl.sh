@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-CWD=$(pwd)
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 PACKAGE="--all"
