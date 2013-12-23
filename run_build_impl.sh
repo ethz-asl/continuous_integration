@@ -26,7 +26,7 @@ echo PACKAGES = "${PACKAGES}"
 echo DEPENDENCIES = "${DEPENDENCIES}"
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
-CPPCHECK_PARAMS=". --enable=all "
+CPPCHECK_PARAMS=". --xml --quiet --enable=all "
 
 mkdir -p $WORKSPACE/src && cd $WORKSPACE/src
 for dependencies in ${DEPENDENCIES}
