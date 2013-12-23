@@ -8,4 +8,4 @@ git pull
 cd $CWD
 
 # Now run actual script.
-run_build_impl.sh
+./run_build_impl.sh
