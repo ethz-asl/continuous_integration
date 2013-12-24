@@ -48,7 +48,7 @@ if $DIR/run_build_catkin_or_rosbuild ${PACKAGES}; then
   # Run cppcheck excluding dependencies.
   cd $WORKSPACE
   rm -f cppcheck-result.xml
-  cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
+  cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml || true
 else
  exit 1
 fi
