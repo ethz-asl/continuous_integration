@@ -43,11 +43,12 @@ done
 cd $WORKSPACE
 
 #Now run the build.
-$DIR/run_build_catkin_or_rosbuild ${PACKAGES}
+if $DIR/run_build_catkin_or_rosbuild ${PACKAGES}; then
+  echo "Running cppcheck $CPPCHECK_PARAMS ..."
+  # Run cppcheck excluding dependencies.
+  cd $WORKSPACE
+  rm -f cppcheck-result.xml
+  cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
+fi
 
-echo "Running cppcheck $CPPCHECK_PARAMS ..."
-# Run cppcheck excluding dependencies.
-cd $WORKSPACE
-pwd
-rm -f cppcheck-result.xml
-cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
+
