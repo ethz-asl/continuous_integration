@@ -49,5 +49,5 @@ echo "Running cppcheck $CPPCHECK_PARAMS ..."
 # Run cppcheck excluding dependencies.
 cd $WORKSPACE
 pwd
-rm cppcheck-result.xml
+rm -f cppcheck-result.xml
 cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
