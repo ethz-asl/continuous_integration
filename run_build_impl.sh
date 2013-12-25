@@ -24,7 +24,7 @@ echo PACKAGES = "${PACKAGES}"
 echo DEPENDENCIES = "${DEPENDENCIES}"
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
-CPPCHECK_PARAMS=". src --xml --enable=all -ibuild "
+CPPCHECK_PARAMS=". src --xml --enable=all -i build "
 
 mkdir -p $WORKSPACE/src && cd $WORKSPACE/src
 for dependencies in ${DEPENDENCIES}
@@ -38,7 +38,7 @@ do
       echo Folder "$foldername" does not exists, running git clone "$dependencies"
       git clone "$dependencies" --recursive
     fi  
-    CPPCHECK_PARAMS="$CPPCHECK_PARAMS -i$foldername "
+    CPPCHECK_PARAMS="$CPPCHECK_PARAMS -i $foldername "
 done
 cd $WORKSPACE
 
