@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH=/usr/lib/ccache:$PATH
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 PACKAGE="--all"
