@@ -1,4 +1,5 @@
 #!/bin/bash
+export PATH=/usr/lib/ccache:$PATH
 cd $WORKSPACE
 export ROS_WS=$WORKSPACE/ros_ws
 rm -rf $ROS_WS
