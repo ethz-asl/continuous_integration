@@ -19,4 +19,4 @@ done
 source $ROS_WS/setup.bash
 source $ROS_WS/setup.sh
 # We use ccache, so already build files will take little time.
-VERBOSE=1 rosmake $@ -V -pre-clean
+VERBOSE=1 rosmake $@ -V --pre-clean
