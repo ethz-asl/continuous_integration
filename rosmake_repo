@@ -22,24 +22,24 @@ source $ROS_WS/setup.sh
 # We use ccache, so already build files will take little time.
 VERBOSE=1 rosmake $@ -V --pre-clean
 # Clear out results from the requested packages.
-TEST_RESULTS_FOLDER=$HOME/.ros/test_results
-for package in $@
-do
-    echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
-    rm -rf $TEST_RESULTS_FOLDER/$package
-done
+#TEST_RESULTS_FOLDER=$HOME/.ros/test_results
+#for package in $@
+#do
+#    echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
+#    rm -rf $TEST_RESULTS_FOLDER/$package
+#done
 # Run the tests.
-VERBOSE=1 rosmake $@ -V --test-only
+#VERBOSE=1 rosmake $@ -V --test-only
 
 # Clear / Create a directory in the workspace where we can store the test results.
-TEST_RESULTS_DEST=$WORKSPACE/test_results/
-rm -rf $TEST_RESULTS_DEST
-mkdir -p $TEST_RESULTS_DEST
-for package in $@
-do
-    # Copy all test results from the currently build packages to the workspace folder.
-    echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
-    mkdir -p $TEST_RESULTS_DEST/$package/
-    # Only copy rosunit xml files.
-    cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $TEST_RESULTS_DEST/$package/
-done
+#TEST_RESULTS_DEST=$WORKSPACE/test_results/
+#rm -rf $TEST_RESULTS_DEST
+#mkdir -p $TEST_RESULTS_DEST
+#for package in $@
+#do
+#    # Copy all test results from the currently build packages to the workspace folder.
+#    echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
+#    mkdir -p $TEST_RESULTS_DEST/$package/
+#    # Only copy rosunit xml files.
+#    cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $TEST_RESULTS_DEST/$package/
+#done
