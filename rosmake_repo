@@ -37,6 +37,6 @@ mkdir -p $WORKSPACE/test_results/
 for package in $@
 do
     # Copy all test results from the currently build packages to the workspace folder.
-    echo "Copying test results from $TEST_RESULTS_FOLDER/$package to workspace..."
+    echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $WORKSPACE/test_results/..."
     cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $WORKSPACE/test_results/
 done
