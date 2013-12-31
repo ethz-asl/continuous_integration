@@ -32,11 +32,14 @@ done
 VERBOSE=1 rosmake $@ -V --test-only
 
 # Clear / Create a directory in the workspace where we can store the test results.
-rm -rf $WORKSPACE/test_results/
-mkdir -p $WORKSPACE/test_results/
+TEST_RESULTS_DEST=$WORKSPACE/test_results/
+rm -rf $TEST_RESULTS_DEST
+mkdir -p $TEST_RESULTS_DEST
 for package in $@
 do
     # Copy all test results from the currently build packages to the workspace folder.
-    echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $WORKSPACE/test_results/..."
-    cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $WORKSPACE/test_results/$package/
+    echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
+    mkdir -p $TEST_RESULTS_DEST/$package/
+    # Only copy rosunit xml files.
+    cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $TEST_RESULTS_DEST/$package/
 done
