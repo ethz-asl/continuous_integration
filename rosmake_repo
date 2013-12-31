@@ -38,5 +38,5 @@ for package in $@
 do
     # Copy all test results from the currently build packages to the workspace folder.
     echo "Copying test results from $TEST_RESULTS_FOLDER/$package to workspace..."
-    cp -r $TEST_RESULTS_FOLDER/$package $WORKSPACE/test_results/
+    cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $WORKSPACE/test_results/
 done
