@@ -22,10 +22,11 @@ source $ROS_WS/setup.sh
 # We use ccache, so already build files will take little time.
 VERBOSE=1 rosmake $@ -V --pre-clean
 # Clear out results from the requested packages.
+TEST_RESULTS_FOLDER=$HOME/.ros/test_results
 for package in $@
 do
-    echo "Clearing test results in $ROS_ROOT/test_results/$package ..."
-    rm -rf $ROS_ROOT/test_results/$package
+    echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
+    rm -rf $TEST_RESULTS_FOLDER/$package
 done
 # Run the tests.
 VERBOSE=1 rosmake $@ -V --test-only
@@ -36,6 +37,6 @@ mkdir -p $WORKSPACE/test_results/
 for package in $@
 do
     # Copy all test results from the currently build packages to the workspace folder.
-    echo "Copying test results from $ROS_ROOT/test_results/$package to workspace..."
-    cp -r $ROS_ROOT/test_results/$package $WORKSPACE/test_results/
+    echo "Copying test results from $TEST_RESULTS_FOLDER/$package to workspace..."
+    cp -r $TEST_RESULTS_FOLDER/$package $WORKSPACE/test_results/
 done
