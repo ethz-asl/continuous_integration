@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Hardcode the new gtest version.
+GTEST_ROOT=$HOME/gtest-1.7.0
+
+# Get the directory of the script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 PACKAGE="--all"
