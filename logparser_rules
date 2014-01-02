@@ -3,10 +3,12 @@ error /[Ee]rror:/
 
 warning /[Ww]arning:/
 
-warning /[Ii]nfo:/
+info /[Nn]ote:/
 
 # each line containing 'c++' represents the start of a section for grouping errors and warnings found after the line.
 start /ccache/
+
+start /gcc/
 
 # Tests:
 start /FAILURES:/
