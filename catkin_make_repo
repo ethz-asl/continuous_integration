@@ -10,3 +10,20 @@ if [ $# -eq 0 ]
     catkin_make --pkg $1
     catkin_make run_tests
 fi
+
+# Clear out results from the requested packages.
+TEST_RESULTS_FOLDER=$WORKSPACE/build/test_results/
+for package in $@
+do
+    echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
+    rm -rf $TEST_RESULTS_FOLDER/$package
+done
+
+# Clear / Create a directory in the workspace where we can store the test results.
+TEST_RESULTS_DEST=$WORKSPACE/test_results/
+rm -rf $TEST_RESULTS_DEST
+mkdir -p $TEST_RESULTS_DEST
+
+# Copy all test results from the currently build packages to the workspace folder.
+echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
+cp -r $TEST_RESULTS_FOLDER/* $TEST_RESULTS_DEST/ || true
