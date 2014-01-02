@@ -9,6 +9,6 @@ warning /[Ii]nfo:/
 start /ccache/
 
 # Tests:
-#start /FAILURES:/
-#
-#error /FAILURE/
+start /FAILURES:/
+
+error /FAILURE/
