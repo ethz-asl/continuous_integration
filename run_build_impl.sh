@@ -20,7 +20,7 @@ case $i in
     DEPENDENCIES="${i#*=}"
     ;;
     *)
-       echo "Usage: run_build [{-d|--dependencies}=dependency.git] [{-p|--packages}=packages]"
+       echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git] [{-p|--packages}=packages]"
     ;;
 esac
 done
@@ -33,16 +33,16 @@ DEPS=src/dependencies
 CPPCHECK_PARAMS=". src --xml --enable=all -j8 -ibuild -i$DEPS"
 
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
-for dependencies in ${DEPENDENCIES}
+for dependency in ${DEPENDENCIES}
 do
-    foldername_w_ext=${dependencies##*/}
+    foldername_w_ext=${dependency##*/}
     foldername=${foldername_w_ext%.*}
     if [ -d $foldername ]; then
-      echo Folder "$foldername" exists, running git pull on "$dependencies"
+      echo Package "$foldername" exists, running git pull on "$dependency"
       cd "$foldername" && git pull && cd ..
     else
-      echo Folder "$foldername" does not exists, running git clone "$dependencies"
-      git clone "$dependencies" --recursive
+      echo Package "$foldername" does not exists, running git clone "$dependency"
+      git clone "$dependency" --recursive
     fi
 done
 cd $WORKSPACE
