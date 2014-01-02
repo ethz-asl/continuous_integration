@@ -3,7 +3,7 @@ export PATH=/usr/lib/ccache:$PATH
 cd $WORKSPACE
 export ROS_WS=$WORKSPACE/ros_ws
 rm -rf $ROS_WS
-mkdir $ROS_WS
+mkdir -p $ROS_WS
 rosws init $ROS_WS /opt/ros/hydro
 for package in $(find ./* -type d)
 do
@@ -19,7 +19,8 @@ do
 done
 source $ROS_WS/setup.bash
 source $ROS_WS/setup.sh
-# We use ccache, so already build files will take little time.
+# We use ccache, so already build files will take little time to rebuild, 
+# so pre-clean is fine to be sure there are no stale files.
 VERBOSE=1 rosmake $@ -V --pre-clean
 
 # Clear out results from the requested packages.
