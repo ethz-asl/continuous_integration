@@ -1,3 +1,6 @@
+#Ignore cmake warnings:
+ok /^CMake/
+
 # Build output:
 error /[Ee]rror:/
 
