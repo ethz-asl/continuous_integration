@@ -5,6 +5,8 @@ catkin_make clean
 if [ $# -eq 0 ]
   then
     catkin_make
+    catkin_make run_tests
   else
     catkin_make --pkg $1
+    catkin_make run_tests
 fi

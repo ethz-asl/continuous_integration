@@ -31,7 +31,7 @@ do
     rm -rf $TEST_RESULTS_FOLDER/$package
 done
 # Run the tests.
-VERBOSE=1 rosmake $@ -V --test-only
+rosmake $@ -V --test-only
 
 # Die if make test fails.
 ret_code=$?
