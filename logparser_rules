@@ -1,8 +1,10 @@
 # Ignore cmake warnings:
 ok /^CMake/
+# Some classes end with Error e.g. MarginalizationError, where the scoping :: helps then.
+ok /[Ee]rror::/
 
 # Build output:
-error /[Ee]rror:/
+error /[Ee]rror: /
 
 warning /[Ww]arning:/
 
