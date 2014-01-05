@@ -5,9 +5,17 @@ catkin_make clean
 if [ $# -eq 0 ]
   then
     catkin_make
+    ret_code=$?
+    if [ $ret_code != 0 ]; then
+      exit $ret_code
+    fi
     catkin_make run_tests
   else
     catkin_make --pkg $1
+    ret_code=$?
+    if [ $ret_code != 0 ]; then
+      exit $ret_code
+    fi
     catkin_make run_tests
 fi
 
