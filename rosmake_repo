@@ -4,6 +4,9 @@ export PATH=/usr/lib/ccache:$PATH
 RUN_TESTS=$1
 PACKAGES=${*:2}
 
+echo Checking whether we should run the tests...
+echo RUN_TESTS = ${RUN_TESTS}
+
 cd $WORKSPACE
 export ROS_WS=$WORKSPACE/ros_ws
 rm -rf $ROS_WS
