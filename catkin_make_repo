@@ -1,6 +1,10 @@
 #!/bin/bash
 source /opt/ros/hydro/setup.bash
 export PATH=/usr/lib/ccache:$PATH
+
+RUN_TESTS=$1
+PACKAGES=${*:2}
+
 catkin_make clean
 if [ $# -eq 0 ]
   then
@@ -9,14 +13,15 @@ if [ $# -eq 0 ]
     if [ $ret_code != 0 ]; then
       exit $ret_code
     fi
-    catkin_make run_tests
   else
-    catkin_make --pkg $1
+    catkin_make --pkg $PACKAGES
     ret_code=$?
     if [ $ret_code != 0 ]; then
       exit $ret_code
     fi
-    catkin_make run_tests
+fi
+if [ $RUN_TESTS ]
+  catkin_make run_tests
 fi
 
 # Die if make test fails.

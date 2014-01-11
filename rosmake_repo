@@ -1,5 +1,9 @@
 #!/bin/bash
 export PATH=/usr/lib/ccache:$PATH
+
+RUN_TESTS=$1
+PACKAGES=${*:2}
+
 cd $WORKSPACE
 export ROS_WS=$WORKSPACE/ros_ws
 rm -rf $ROS_WS
@@ -21,33 +25,35 @@ source $ROS_WS/setup.bash
 source $ROS_WS/setup.sh
 # We use ccache, so already build files will take little time to rebuild, 
 # so pre-clean is fine to be sure there are no stale files.
-VERBOSE=1 rosmake $@ -V --pre-clean
+VERBOSE=1 rosmake ${PACKAGES} -V --pre-clean
 
-# Clear out results from the requested packages.
-TEST_RESULTS_FOLDER=$HOME/.ros/test_results
-for package in $@
-do
-    echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
-    rm -rf $TEST_RESULTS_FOLDER/$package
-done
-# Run the tests.
-rosmake $@ -Vk --test-only
+if [${RUN_TESTS}]; then
+  # Clear out results from the requested packages.
+  TEST_RESULTS_FOLDER=$HOME/.ros/test_results
+  for package in ${PACKAGES}
+  do
+      echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
+      rm -rf $TEST_RESULTS_FOLDER/$package
+  done
+  # Run the tests.
+  rosmake ${PACKAGES} -Vk --test-only
 
-# Die if make test fails.
-#ret_code=$?
-#if [ $ret_code != 0 ]; then
-#  exit $ret_code
-#fi
+  # Die if make test fails.
+  #ret_code=$?
+  #if [ $ret_code != 0 ]; then
+  #  exit $ret_code
+  #fi
 
-# Clear / Create a directory in the workspace where we can store the test results.
-TEST_RESULTS_DEST=$WORKSPACE/test_results/
-rm -rf $TEST_RESULTS_DEST
-mkdir -p $TEST_RESULTS_DEST
-for package in $@
-do
-    # Copy all test results from the currently build packages to the workspace folder.
-    echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
-    mkdir -p $TEST_RESULTS_DEST/$package/
-    # Only copy rosunit xml files.
-    cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $TEST_RESULTS_DEST/$package/ || true
-done
+  # Clear / Create a directory in the workspace where we can store the test results.
+  TEST_RESULTS_DEST=$WORKSPACE/test_results/
+  rm -rf $TEST_RESULTS_DEST
+  mkdir -p $TEST_RESULTS_DEST
+  for package in ${PACKAGES}
+  do
+      # Copy all test results from the currently build packages to the workspace folder.
+      echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
+      mkdir -p $TEST_RESULTS_DEST/$package/
+      # Only copy rosunit xml files.
+      cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $TEST_RESULTS_DEST/$package/ || true
+  done
+fi

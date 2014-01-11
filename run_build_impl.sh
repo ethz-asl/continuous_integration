@@ -3,11 +3,12 @@
 # Hardcode the new gtest version.
 GTEST_ROOT=$HOME/gtest-1.7.0
 
-# Get the directory of the script.
+# Get the directory of this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 PACKAGE="--all"
 DEPENDENCIES=""
+RUN_TESTS=true
 
 # Download / update dependencies.
 for i in "$@"
@@ -19,13 +20,17 @@ case $i in
     -d=*|--dependencies=*)
     DEPENDENCIES="${i#*=}"
     ;;
+    -n|--no_tests)
+    RUN_TESTS=false
+    ;;
     *)
-       echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git] [{-p|--packages}=packages]"
+       echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git] [{-p|--packages}=packages] [{-n|--no_tests} skip gtest execution]"
     ;;
 esac
 done
 echo PACKAGES = "${PACKAGES}"
 echo DEPENDENCIES = "${DEPENDENCIES}"
+echo RUN_TESTS = "${RUN_TESTS}"
 
 DEPS=src/dependencies
 
@@ -48,7 +53,7 @@ done
 cd $WORKSPACE
 
 #Now run the build.
-if $DIR/run_build_catkin_or_rosbuild ${PACKAGES}; then
+if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
   echo "Running cppcheck $CPPCHECK_PARAMS ..."
   # Run cppcheck excluding dependencies.
   cd $WORKSPACE
