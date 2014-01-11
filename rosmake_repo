@@ -31,13 +31,13 @@ do
     rm -rf $TEST_RESULTS_FOLDER/$package
 done
 # Run the tests.
-rosmake $@ -V --test-only
+rosmake $@ -Vk --test-only
 
 # Die if make test fails.
-ret_code=$?
-if [ $ret_code != 0 ]; then
-  exit $ret_code
-fi
+#ret_code=$?
+#if [ $ret_code != 0 ]; then
+#  exit $ret_code
+#fi
 
 # Clear / Create a directory in the workspace where we can store the test results.
 TEST_RESULTS_DEST=$WORKSPACE/test_results/
