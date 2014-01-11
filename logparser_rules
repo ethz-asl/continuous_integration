@@ -2,6 +2,8 @@
 ok /^CMake/
 # Some classes end with Error e.g. MarginalizationError, where the scoping :: helps to disambiguate.
 ok /[Ee]rror::/
+# make clean errors are also ok
+ok /(ignored)/
 
 # Build output:
 error /[Ee]rror: /
