@@ -5,6 +5,13 @@ export PATH=/usr/lib/ccache:$PATH
 RUN_TESTS=$1
 PACKAGES=${*:2}
 
+echo Checking whether we should run the tests...
+if $RUN_TESTS; then
+  echo "Will first build ${$PACKAGES} and then run tests."
+else
+  echo "Will only build ${$PACKAGES} and skip tests."
+fi
+
 catkin_make clean
 if [ $# -eq 0 ]
   then
@@ -20,7 +27,7 @@ if [ $# -eq 0 ]
       exit $ret_code
     fi
 fi
-if [ $RUN_TESTS ]
+if $RUN_TESTS; then
   catkin_make run_tests
 fi
 

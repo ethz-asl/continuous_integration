@@ -5,7 +5,7 @@ RUN_TESTS=$1
 PACKAGES=${*:2}
 
 echo Checking whether we should run the tests...
-if [${RUN_TESTS}]; then
+if $RUN_TESTS; then
   echo "Will first build ${$PACKAGES} and then run tests."
 else
   echo "Will only build ${$PACKAGES} and skip tests."
@@ -35,7 +35,7 @@ source $ROS_WS/setup.sh
 # so pre-clean is fine to be sure there are no stale files.
 VERBOSE=1 rosmake ${PACKAGES} -V --pre-clean
 
-if [${RUN_TESTS}]; then
+if $RUN_TESTS; then
   # Clear out results from the requested packages.
   TEST_RESULTS_FOLDER=$HOME/.ros/test_results
   for package in ${PACKAGES}
