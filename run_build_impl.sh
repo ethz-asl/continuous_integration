@@ -9,6 +9,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PACKAGE="--all"
 DEPENDENCIES=""
 RUN_TESTS=true
+RUN_CPPCHECK=true
 
 # Download / update dependencies.
 for i in "$@"
@@ -20,17 +21,24 @@ case $i in
     -d=*|--dependencies=*)
     DEPENDENCIES="${i#*=}"
     ;;
-    -n|--no_tests)
+    -t|--no_tests)
     RUN_TESTS=false
     ;;
+    -c|--no_cppcheck)
+    RUN_CPPCHECK=false
+    ;;
     *)
-       echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git] [{-p|--packages}=packages] [{-n|--no_tests} skip gtest execution]"
+       echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git] [{-p|--packages}=packages] [{-t|--no_tests} skip gtest execution] [{-c|--no_cppcheck} skip cppcheck execution]"
     ;;
 esac
 done
-echo PACKAGES = "${PACKAGES}"
-echo DEPENDENCIES = "${DEPENDENCIES}"
-echo RUN_TESTS = "${RUN_TESTS}"
+echo "Parameters:"
+echo "-----------------------------"
+echo "Packages: ${PACKAGES}"
+echo "Dependencies: ${DEPENDENCIES}"
+echo "Execute integration tests: ${RUN_TESTS}"
+echo "Run cppcheck: ${RUN_CPPCHECK}"
+echo "-----------------------------"
 
 DEPS=src/dependencies
 
@@ -57,8 +65,10 @@ if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
   echo "Running cppcheck $CPPCHECK_PARAMS ..."
   # Run cppcheck excluding dependencies.
   cd $WORKSPACE
-  rm -f cppcheck-result.xml
-  cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml || true
+  if $RUN_CPPCHECK; then
+    rm -f cppcheck-result.xml
+    cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
+  fi
 else
  exit 1
 fi
