@@ -13,7 +13,7 @@ else
 fi
 
 catkin_make clean
-if [ "$PACKAGES" -eq "" ] || [ "$PACKAGES" -eq "0" ]  || [ "$PACKAGES" -eq " " ]; then
+if [ "$PACKAGES" -eq "0" ] || [ "$PACKAGES" = "" ]  || [ "$PACKAGES" = " " ]; then
     catkin_make
     ret_code=$?
     if [ $ret_code != 0 ]; then
