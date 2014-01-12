@@ -35,7 +35,7 @@ echo RUN_TESTS = "${RUN_TESTS}"
 DEPS=src/dependencies
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
-CPPCHECK_PARAMS="src --xml --enable=all -j8 -ibuild -i$DEPS"
+CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
 
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
 for dependency in ${DEPENDENCIES}
