@@ -13,7 +13,7 @@ else
 fi
 
 catkin_make clean
-if [ $# -eq 0 ]
+if [ $PACKAGES -eq 0 ]
   then
     catkin_make
     ret_code=$?
