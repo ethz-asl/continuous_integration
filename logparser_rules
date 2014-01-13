@@ -5,6 +5,7 @@ ok /[Ee]rror::/
 # make clean errors are also ok
 ok /(ignored)/
 
+
 # Build output:
 error /[Ee]rror: /
 error /ld: cannot find/
@@ -21,6 +22,6 @@ start /ccache/
 start /gcc/
 
 # Tests:
-start /FAILURES:/
-
-error /FAILURE/
+#start /FAILURES:/
+ok /[test]/
+ok /\[FAILURE\]/ # We parse test errors separately.
