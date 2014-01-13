@@ -9,7 +9,7 @@ ok /(ignored)/
 error /[Ee]rror: /
 error /ld: cannot find/
 error /Error [0-9]/
-error /[FAIL]/
+error /\[FAIL\]/
 
 warning /[Ww]arning:/
 
