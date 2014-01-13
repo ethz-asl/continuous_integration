@@ -35,6 +35,12 @@ source $ROS_WS/setup.sh
 # so pre-clean is fine to be sure there are no stale files.
 VERBOSE=1 rosmake ${PACKAGES} -V --pre-clean
 
+# Die if make test fails.
+ret_code=$?
+if [ $ret_code != 0 ]; then
+  exit $ret_code
+fi
+
 if $RUN_TESTS; then
   # Clear out results from the requested packages.
   TEST_RESULTS_FOLDER=$HOME/.ros/test_results
