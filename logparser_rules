@@ -7,7 +7,7 @@ ok /(ignored)/
 
 # Tests:
 #start /FAILURES:/
-ok /[test]/
+ok /test/
 ok /\[FAILURE\]/ # We parse test errors separately.
 
 # Build output:
