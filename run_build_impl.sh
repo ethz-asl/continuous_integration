@@ -28,7 +28,10 @@ case $i in
     RUN_CPPCHECK=false
     ;;
     *)
-       echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git] [{-p|--packages}=packages] [{-t|--no_tests} skip gtest execution] [{-c|--no_cppcheck} skip cppcheck execution]"
+       echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git]"
+       echo "  [{-p|--packages}=packages]"
+       echo "  [{-t|--no_tests} skip gtest execution]"
+       echo "  [{-c|--no_cppcheck} skip cppcheck execution]"
     ;;
 esac
 done
