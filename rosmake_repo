@@ -35,7 +35,7 @@ source $ROS_WS/setup.sh
 # so pre-clean is fine to be sure there are no stale files.
 VERBOSE=1 rosmake ${PACKAGES} -V --pre-clean
 
-# Die if make test fails.
+# Die if rosmake fails.
 ret_code=$?
 if [ $ret_code != 0 ]; then
   exit $ret_code
@@ -49,14 +49,8 @@ if $RUN_TESTS; then
       echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
       rm -rf $TEST_RESULTS_FOLDER/$package
   done
-  # Run the tests.
+  # Run the tests. Don't fail if the tests fail, we will parse their results later.
   rosmake ${PACKAGES} -Vk --test-only
-
-  # Die if make test fails.
-  #ret_code=$?
-  #if [ $ret_code != 0 ]; then
-  #  exit $ret_code
-  #fi
 
   # Clear / Create a directory in the workspace where we can store the test results.
   TEST_RESULTS_DEST=$WORKSPACE/test_results/
