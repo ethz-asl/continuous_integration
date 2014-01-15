@@ -33,7 +33,7 @@ source $ROS_WS/setup.bash
 source $ROS_WS/setup.sh
 # We use ccache, so already build files will take little time to rebuild, 
 # so pre-clean is fine to be sure there are no stale files.
-VERBOSE=1 rosmake ${PACKAGES} -V #--pre-clean
+VERBOSE=1 rosmake ${PACKAGES} -V --pre-clean
 
 # Die if rosmake fails.
 ret_code=$?
