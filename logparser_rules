@@ -5,6 +5,9 @@ ok /[Ee]rror::/
 # make clean errors are also ok
 ok /(ignored)/
 
+# Build output:
+error /error: /
+
 # Tests:
 #start /FAILURES:/
 ok /test/
