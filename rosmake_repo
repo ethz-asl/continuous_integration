@@ -65,3 +65,5 @@ if $RUN_TESTS; then
       cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $TEST_RESULTS_DEST/$package/ || true
   done
 fi
+cd $ROS_WS
+rm -rf `find . -type d -name build` || true
