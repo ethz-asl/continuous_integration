@@ -27,13 +27,6 @@ if [ "$PACKAGES" = "" ]  || [ "$PACKAGES" = " " ]; then
     fi
 fi
 if $RUN_TESTS; then
-  catkin_make run_tests
-  # Die if make test fails.
-  ret_code=$?
-  if [ $ret_code != 0 ]; then
-    exit $ret_code
-  fi
-
   # Clear out results from the requested packages.
   TEST_RESULTS_FOLDER=$WORKSPACE/build/test_results
   for package in $@
@@ -41,6 +34,13 @@ if $RUN_TESTS; then
       echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
       rm -rf $TEST_RESULTS_FOLDER/$package
   done
+
+  catkin_make run_tests
+  # Die if make test fails.
+  ret_code=$?
+  if [ $ret_code != 0 ]; then
+    exit $ret_code
+  fi
 
   # Clear / Create a directory in the workspace where we can store the test results.
   TEST_RESULTS_DEST=$WORKSPACE/test_results/
