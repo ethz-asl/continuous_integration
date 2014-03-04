@@ -43,6 +43,13 @@ echo "Execute integration tests: ${RUN_TESTS}"
 echo "Run cppcheck: ${RUN_CPPCHECK}"
 echo "-----------------------------"
 
+
+echo "Compilers:"
+echo "-----------------------------"
+gcc -v
+g++ -v
+echo "-----------------------------"
+
 DEPS=src/dependencies
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
