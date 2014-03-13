@@ -52,7 +52,3 @@ if $RUN_TESTS; then
   cp -r $TEST_RESULTS_FOLDER/* $TEST_RESULTS_DEST/ || true
 fi
 
-# Clear build files.
-rm -rf $WORKSPACE/build || true
-rm -rf $WORKSPACE/devel || true
-
