@@ -52,6 +52,10 @@ echo "-----------------------------"
 
 DEPS=src/dependencies
 
+CATKIN_SIMPLE_URL=git@github.com:catkin/catkin_simple.git
+
+DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
+
 # Prepare cppcheck ignore list. We want to skip dependencies.
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
 
