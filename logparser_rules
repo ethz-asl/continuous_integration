@@ -5,6 +5,9 @@ ok /[Ee]rror::/
 # make clean errors are also ok
 ok /(ignored)/
 
+# ignore doxygen warnings
+ok /is not documented/
+
 # Build output:
 error /error: /
 
