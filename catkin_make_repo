@@ -5,6 +5,8 @@ export PATH=/usr/lib/ccache:$PATH
 RUN_TESTS=$1
 PACKAGES=${*:2}
 
+mkdir -p $WORKSPACE/devel/include
+
 echo Checking whether we should run the tests...
 if $RUN_TESTS; then
   echo "Will first build $PACKAGES and then run tests."
