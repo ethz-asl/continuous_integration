@@ -16,7 +16,7 @@ cd $WORKSPACE
 export ROS_WS=$WORKSPACE/ros_ws
 rm -rf $ROS_WS
 mkdir -p $ROS_WS
-rosws init $ROS_WS /opt/ros/hydro
+rosws init $ROS_WS /var/lib/jenkins/ros_catkin_ws/install_isolated
 for package in $(find ./* -type d)
 do
   if [ -a "$package/manifest.xml" ]
