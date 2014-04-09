@@ -2,6 +2,8 @@
 source /var/lib/jenkins/ros_catkin_ws/install_isolated/setup.sh
 export PATH=/usr/lib/ccache:$PATH
 
+rm $WORKSPACE/src/CMakeLists.txt
+
 RUN_TESTS=$1
 PACKAGES=${*:2}
 
