@@ -15,6 +15,10 @@ else
 fi
 
 catkin_make clean
+
+# Make sure catkin_simple is built first
+catkin_make --pkg catkin_simple
+
 if [ "$PACKAGES" = "" ]  || [ "$PACKAGES" = " " ]; then
     catkin_make
     ret_code=$?
