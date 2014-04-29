@@ -3,10 +3,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $WORKSPACE/src
 if [ -e "manifest.xml" ] || [ -e "stack.xml" ]; then
-  echo "*** Found a rosmake repo"
+  echo "#### Found a rosmake repo"
   $DIR/rosmake_repo $@
 else
-  echo "*** Found a catkin repo"
+  echo "#### Found a catkin repo"
   cd $WORKSPACE
   $DIR/catkin_make_repo $@
 fi
