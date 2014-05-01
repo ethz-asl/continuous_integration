@@ -33,6 +33,8 @@ if [ "$PACKAGES" = "" ]  || [ "$PACKAGES" = " " ]; then
     fi
 fi
 if $RUN_TESTS; then
+  echo "*** sourcing the devel space"
+  source $WORKSPACE/devel/setup.bash
   # Clear out results from the requested packages.
   TEST_RESULTS_FOLDER=$WORKSPACE/build/test_results
   for package in $@
