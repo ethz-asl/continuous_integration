@@ -41,7 +41,10 @@ if $RUN_TESTS; then
       rm -rf $TEST_RESULTS_FOLDER/$package
   done
 
-  catkin_make run_tests
+  for PACKAGE in $PACKAGES
+  do
+    catkin_make run_tests_$PACKAGE
+  done
   # Die if make test fails.
   ret_code=$?
   if [ $ret_code != 0 ]; then
