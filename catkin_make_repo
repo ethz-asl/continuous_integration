@@ -43,13 +43,29 @@ if $RUN_TESTS; then
       rm -rf $TEST_RESULTS_FOLDER/$package
   done
 
-  catkin_make run_tests
-  # Die if make test fails.
-  ret_code=$?
-  if [ $ret_code != 0 ]; then
-    exit $ret_code
-  fi
-  
+  for package in $PACKAGES
+  do
+    echo "*** Trying to run the tests for package $PACKAGE"
+    # catch the output of catkin make and redirect stderr to stdout (2>&1)
+    OUTPUT=$(catkin_make run_tests_$package 2>&1)
+    ret_code=$?
+    echo $OUTPUT
+    # Try to figure out if things failed because there are no unit tests
+    # for this package. Search for the error message Make puts out:
+    NO_TESTS=$(echo $OUTPUT | grep "No rule to make target")
+    if [[ -z $NO_TESTS ]]; then
+        # There were tests
+        if [ $ret_code != 0 ]; then
+            echo "*** Tests for package $PACKAGE failed"
+            exit $ret_code
+        else
+            echo "*** Tests for package $PACKAGE succeeded"
+        fi
+    else
+        echo "*** No tests for package $PACKAGE"
+    fi
+  done
+
   # Clear / Create a directory in the workspace where we can store the test results.
   TEST_RESULTS_DEST=$WORKSPACE/test_results/
   rm -rf $TEST_RESULTS_DEST
