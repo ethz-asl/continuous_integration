@@ -45,7 +45,7 @@ if $RUN_TESTS; then
 
   for PACKAGE in $PACKAGES
   do
-    echo "*** Trying to run the tests for package $PACKAGE"
+    echo "*** $PACKAGE -- Attempting to run unit tests"
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
     OUTPUT=$(catkin_make run_tests_$PACKAGE 2>&1)
     ret_code=$?
@@ -60,13 +60,13 @@ if $RUN_TESTS; then
         # no tests
         echo "$OUTPUT"
         if [ $ret_code != 0 ]; then
-            echo "*** Tests for package $PACKAGE failed"
+            echo "*** $PACKAGE -- Unit tests failed"
             exit $ret_code
         else
-            echo "*** Tests for package $PACKAGE succeeded"
+            echo "*** $PACKAGE -- Unit tests succeeded"
         fi
     else
-        echo "*** No tests for package $PACKAGE"
+        echo "*** $PACKAGE -- No unit tests found"
     fi
   done
 
