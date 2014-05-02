@@ -49,7 +49,8 @@ if $RUN_TESTS; then
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
     OUTPUT=$(catkin_make run_tests_$PACKAGE 2>&1)
     ret_code=$?
-    echo $OUTPUT
+    # Echo the output for parsing by Jenkins
+    echo "$OUTPUT"
     # Try to figure out if things failed because there are no unit tests
     # for this package. Search for the error message Make puts out:
     NO_TESTS=$(echo $OUTPUT | grep "No rule to make target")
