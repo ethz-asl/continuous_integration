@@ -43,11 +43,11 @@ if $RUN_TESTS; then
       rm -rf $TEST_RESULTS_FOLDER/$package
   done
 
-  for package in $PACKAGES
+  for PACKAGE in $PACKAGES
   do
     echo "*** Trying to run the tests for package $PACKAGE"
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
-    OUTPUT=$(catkin_make run_tests_$package 2>&1)
+    OUTPUT=$(catkin_make run_tests_$PACKAGE 2>&1)
     ret_code=$?
     echo $OUTPUT
     # Try to figure out if things failed because there are no unit tests
