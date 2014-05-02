@@ -49,13 +49,16 @@ if $RUN_TESTS; then
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
     OUTPUT=$(catkin_make run_tests_$PACKAGE 2>&1)
     ret_code=$?
-    # Echo the output for parsing by Jenkins
-    echo "$OUTPUT"
+
     # Try to figure out if things failed because there are no unit tests
     # for this package. Search for the error message Make puts out:
     NO_TESTS=$(echo $OUTPUT | grep "No rule to make target")
     if [[ -z $NO_TESTS ]]; then
         # There were tests
+        # Echo the output for parsing by Jenkins. Placing this line
+        # inside the if statement supresses output if there were
+        # no tests
+        echo "$OUTPUT"
         if [ $ret_code != 0 ]; then
             echo "*** Tests for package $PACKAGE failed"
             exit $ret_code
