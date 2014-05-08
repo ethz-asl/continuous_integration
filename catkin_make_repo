@@ -26,7 +26,7 @@ if [ "$PACKAGES" = "" ]  || [ "$PACKAGES" = " " ]; then
       exit $ret_code
     fi
   else
-    catkin_make --pkg $PACKAGES
+    catkin_make --pkg $PACKAGES --make-args VERBOSE=1
     ret_code=$?
     if [ $ret_code != 0 ]; then
       exit $ret_code
