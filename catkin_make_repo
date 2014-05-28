@@ -37,7 +37,7 @@ if $RUN_TESTS; then
 
   for PACKAGE in $PACKAGES
   do
-    echo "*** $PACKAGE -- Attempting to run unit tests"
+    echo "*** $PACKAGE -- Attempting to run unit tests."
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
     OUTPUT=$(cd $WORKSPACE/build/$PACKAGE && make run_tests VERBOSE=1 2>&1)
     ret_code=$?
@@ -60,6 +60,8 @@ if $RUN_TESTS; then
     else
         echo "*** $PACKAGE -- No unit tests found"
     fi
+    echo "*** $PACKAGE -- Copy unit test results to common folder."
+    cp $WORKSPACE/build/$PACKAGE/test_results/ $TEST_RESULTS_FOLDER
   done
 
   # Clear / Create a directory in the workspace where we can store the test results.
