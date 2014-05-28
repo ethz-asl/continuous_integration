@@ -14,19 +14,14 @@ else
   echo "Will only build $PACKAGES and skip tests."
 fi
 
-catkin_make clean
-
-# Make sure catkin_simple is built first
-catkin_make --pkg catkin_simple
-
 if [ "$PACKAGES" = "" ]  || [ "$PACKAGES" = " " ]; then
-    catkin_make
+    catkin build --merge-devel --make-args VERBOSE=1
     ret_code=$?
     if [ $ret_code != 0 ]; then
       exit $ret_code
     fi
   else
-    catkin_make --pkg $PACKAGES --make-args VERBOSE=1
+    catkin build --merge-devel $PACKAGES --make-args VERBOSE=1
     ret_code=$?
     if [ $ret_code != 0 ]; then
       exit $ret_code
@@ -42,9 +37,9 @@ if $RUN_TESTS; then
 
   for PACKAGE in $PACKAGES
   do
-    echo "*** $PACKAGE -- Attempting to run unit tests"
+    echo "*** $PACKAGE -- Attempting to run unit tests."
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
-    OUTPUT=$(catkin_make run_tests_$PACKAGE 2>&1)
+    OUTPUT=$(cd $WORKSPACE/build/$PACKAGE && make run_tests VERBOSE=1 2>&1)
     ret_code=$?
 
     # Try to figure out if things failed because there are no unit tests
@@ -65,6 +60,8 @@ if $RUN_TESTS; then
     else
         echo "*** $PACKAGE -- No unit tests found"
     fi
+    echo "*** $PACKAGE -- Copy unit test results to common folder."
+    cp -r $WORKSPACE/build/$PACKAGE/test_results/$PACKAGE $TEST_RESULTS_FOLDER/
   done
 
   # Clear / Create a directory in the workspace where we can store the test results.
