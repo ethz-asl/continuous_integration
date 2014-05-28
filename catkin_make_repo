@@ -14,19 +14,12 @@ else
   echo "Will only build $PACKAGES and skip tests."
 fi
 
-if [ "$PACKAGES" = "" ]  || [ "$PACKAGES" = " " ]; then
-    catkin build --merge-devel --make-args VERBOSE=1
-    ret_code=$?
-    if [ $ret_code != 0 ]; then
-      exit $ret_code
-    fi
-  else
-    catkin build --merge-devel $PACKAGES --make-args VERBOSE=1
-    ret_code=$?
-    if [ $ret_code != 0 ]; then
-      exit $ret_code
-    fi
+catkin build --verbose --no-status --interleave-output --merge-devel $PACKAGES --make-args VERBOSE=1
+ret_code=$?
+if [ $ret_code != 0 ]; then
+  exit $ret_code
 fi
+
 if $RUN_TESTS; then
   echo "*** sourcing the devel space"
   source $WORKSPACE/devel/setup.bash
