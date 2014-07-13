@@ -74,6 +74,24 @@ do
 done
 cd $WORKSPACE
 
+echo -e "\nExecuting refetch hack:"
+echo "-----------------------------"
+#FIX(Jenkins): Refetch the rep as it is not reliably done by Jenkins!
+if [ -n "${sha1}" ]; then
+	REP=$(find src -maxdepth 2 -type d -name .git -print -quit)
+	if [ -n "${REP}" ]; then
+		REP=$(dirname "${REP}")
+		echo "Refetching in ${REP} and checking out ${sha1} :"
+		(cd "${REP}" && git fetch origin && git checkout "${sha1}");
+	else
+		echo "ERROR:Could not find repository to apply refetch hack!"
+	fi
+else
+	echo "SKIPPING:Variable sha1 not set or empty!"
+fi
+echo "-----------------------------"
+
+
 #Now run the build.
 if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
   echo "Running cppcheck $CPPCHECK_PARAMS ..."
