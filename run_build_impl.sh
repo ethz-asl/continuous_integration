@@ -74,20 +74,20 @@ do
 done
 cd $WORKSPACE
 
-echo -e "\nExecuting refetch hack:"
+echo -e "\nExecuting Jenkins independent refetch:"
 echo "-----------------------------"
 #FIX(Jenkins): Refetch the rep as it is not reliably done by Jenkins!
 if [ -n "${sha1}" ]; then
-	REP=$(find src -maxdepth 2 -type d -name .git -print -quit)
+	REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
 	if [ -n "${REP}" ]; then
 		REP=$(dirname "${REP}")
 		echo "Refetching in ${REP} and checking out ${sha1} :"
 		(cd "${REP}" && git fetch origin && git checkout "${sha1}");
 	else
-		echo "ERROR:Could not find repository to apply refetch hack!"
+		echo "ERROR: Could not find repository to run Jenkins independent refetch."
 	fi
 else
-	echo "SKIPPING:Variable sha1 not set or empty!"
+	echo "SKIPPING: Variable sha1 not set or empty!"
 fi
 echo "-----------------------------"
 
