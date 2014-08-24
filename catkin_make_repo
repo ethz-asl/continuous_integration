@@ -1,5 +1,5 @@
 #!/bin/bash
-source /var/lib/jenkins/ros_catkin_ws/install_isolated/setup.sh
+source /opt/ros/indigo/setup.sh
 export PATH=/usr/lib/ccache:$PATH
 
 RUN_TESTS=$1
