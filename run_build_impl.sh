@@ -88,7 +88,7 @@ cd $WORKSPACE
 
 echo -e "\nExecuting Jenkins independent refetch:"
 echo "-----------------------------"
-#FIX(Jenkins): Refetch the rep as it is not reliably done by Jenkins!
+# Refetch the rep as it is not reliably done by Jenkins!
 if [ -n "${sha1}" ]; then
 	REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
 	if [ -n "${REP}" ]; then
