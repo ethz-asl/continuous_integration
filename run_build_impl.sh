@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# Hardcode the new gtest version.
-GTEST_ROOT=$HOME/gtest-1.7.0
-
 # Get the directory of this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 PACKAGE="--all"
 DEPENDENCIES=""
+COMPILER="gcc"
 RUN_TESTS=true
 RUN_CPPCHECK=true
 
@@ -21,15 +19,19 @@ case $i in
     -d=*|--dependencies=*)
     DEPENDENCIES="${i#*=}"
     ;;
+    -c=*|--compiler=*)
+    COMPILER="${i#*=}"
+    ;;
     -t|--no_tests)
     RUN_TESTS=false
     ;;
-    -c|--no_cppcheck)
+    -n|--no_cppcheck)
     RUN_CPPCHECK=false
     ;;
     *)
        echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git]"
        echo "  [{-p|--packages}=packages]"
+       echo "  [{--compiler}=gcc/clang]"
        echo "  [{-t|--no_tests} skip gtest execution]"
        echo "  [{-c|--no_cppcheck} skip cppcheck execution]"
     ;;
@@ -43,11 +45,21 @@ echo "Execute integration tests: ${RUN_TESTS}"
 echo "Run cppcheck: ${RUN_CPPCHECK}"
 echo "-----------------------------"
 
-
 echo "Compilers:"
 echo "-----------------------------"
+if [ "$COMPILER" == "gcc" ]
+then
 gcc -v
 g++ -v
+export CC=gcc
+export CXX=g++
+fi
+if [ "$COMPILER" == "clang" ]
+then
+clang -v
+export CC=clang
+export CXX=clang++
+fi
 echo "-----------------------------"
 
 DEPS=src/dependencies
@@ -76,7 +88,7 @@ cd $WORKSPACE
 
 echo -e "\nExecuting Jenkins independent refetch:"
 echo "-----------------------------"
-#FIX(Jenkins): Refetch the rep as it is not reliably done by Jenkins!
+# Refetch the rep as it is not reliably done by Jenkins!
 if [ -n "${sha1}" ]; then
 	REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
 	if [ -n "${REP}" ]; then
