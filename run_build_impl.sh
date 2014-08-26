@@ -45,17 +45,17 @@ echo "Execute integration tests: ${RUN_TESTS}"
 echo "Run cppcheck: ${RUN_CPPCHECK}"
 echo "-----------------------------"
 
-export CLANG=clang
-export GCC=gcc
 echo "Compilers:"
 echo "-----------------------------"
-if [ "$COMPILER" == "$GCC" ]
+if [ "$COMPILER" == "gcc" ]
+then
 gcc -v
 g++ -v
 export CC=gcc
 export CXX=g++
 fi
-if [ "$COMPILER" == "$CLANG" ]
+if [ "$COMPILER" == "clang" ]
+then
 clang -v
 export CC=clang
 export CXX=clang
