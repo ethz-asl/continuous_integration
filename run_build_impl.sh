@@ -58,7 +58,7 @@ if [ "$COMPILER" == "clang" ]
 then
 clang -v
 export CC=clang
-export CXX=clang
+export CXX=clang++
 fi
 echo "-----------------------------"
 
