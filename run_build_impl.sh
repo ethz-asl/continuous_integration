@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# Hardcode the new gtest version.
-GTEST_ROOT=$HOME/gtest-1.7.0
-
 # Get the directory of this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 PACKAGE="--all"
 DEPENDENCIES=""
+COMPILER="gcc"
 RUN_TESTS=true
 RUN_CPPCHECK=true
 
@@ -21,15 +19,19 @@ case $i in
     -d=*|--dependencies=*)
     DEPENDENCIES="${i#*=}"
     ;;
+    -c=*|--compiler=*)
+    COMPILER="${i#*=}"
+    ;;
     -t|--no_tests)
     RUN_TESTS=false
     ;;
-    -c|--no_cppcheck)
+    -n|--no_cppcheck)
     RUN_CPPCHECK=false
     ;;
     *)
        echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git]"
        echo "  [{-p|--packages}=packages]"
+       echo "  [{--compiler}=gcc/clang]"
        echo "  [{-t|--no_tests} skip gtest execution]"
        echo "  [{-c|--no_cppcheck} skip cppcheck execution]"
     ;;
@@ -46,8 +48,17 @@ echo "-----------------------------"
 
 echo "Compilers:"
 echo "-----------------------------"
+if [ "$COMPILER" == "gcc" ]
 gcc -v
 g++ -v
+export CC=gcc
+export CXX=g++
+fi
+if [ "$COMPILER" == "clang" ]
+clang -v
+export CC=clang
+export CXX=clang
+fi
 echo "-----------------------------"
 
 DEPS=src/dependencies
@@ -93,7 +104,7 @@ echo "-----------------------------"
 
 
 #Now run the build.
-if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
+if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${COMPILER} ${PACKAGES}; then
   echo "Running cppcheck $CPPCHECK_PARAMS ..."
   # Run cppcheck excluding dependencies.
   cd $WORKSPACE
