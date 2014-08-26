@@ -105,7 +105,7 @@ echo "-----------------------------"
 
 
 #Now run the build.
-if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${COMPILER} ${PACKAGES}; then
+if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
   echo "Running cppcheck $CPPCHECK_PARAMS ..."
   # Run cppcheck excluding dependencies.
   cd $WORKSPACE
