@@ -78,10 +78,10 @@ do
     foldername=${foldername_w_ext%.*}
     if [ -d $foldername ]; then
       echo Package "$foldername" exists, running git pull and git submodule update --recursive on "$dependency"
-      cd "$foldername" && git pull && git submodule update --recursive && cd ..
+      cd "$foldername" && git pull --depth 1 && git submodule update --recursive && cd ..
     else
       echo Package "$foldername" does not exists, running git clone "$dependency" --recursive
-      git clone "$dependency" --recursive
+      git clone "$dependency" --recursive --depth 1 --single-branch
     fi
 done
 cd $WORKSPACE
@@ -94,7 +94,7 @@ if [ -n "${sha1}" ]; then
 	if [ -n "${REP}" ]; then
 		REP=$(dirname "${REP}")
 		echo "Refetching in ${REP} and checking out ${sha1} :"
-		(cd "${REP}" && git fetch origin && git checkout "${sha1}");
+		(cd "${REP}" && git fetch origin --depth 1 && git checkout "${sha1}");
 	else
 		echo "ERROR: Could not find repository to run Jenkins independent refetch."
 	fi
