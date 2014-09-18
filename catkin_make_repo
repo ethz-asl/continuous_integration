@@ -14,7 +14,7 @@ else
   echo "Will only build $PACKAGES and skip tests."
 fi
 
-catkin build --verbose --no-status --interleave-output --merge-devel $PACKAGES --make-args VERBOSE=1
+catkin build --verbose --no-status --interleave-output $PACKAGES --make-args VERBOSE=1
 ret_code=$?
 if [ $ret_code != 0 ]; then
   exit $ret_code
