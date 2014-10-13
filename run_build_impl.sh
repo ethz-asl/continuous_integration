@@ -74,10 +74,7 @@ CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
 for dependency_w_branch in ${DEPENDENCIES}
 do  
-    old_ifs=$IFS
-    IFS=';'
-    all_dep_parts=$dependency_w_branch
-    IFS=$OIFS
+    all_dep_parts=arr=$(echo $dependency_w_branch | tr ";" "\n")
     dependency=${all_dep_parts[0]}
     branch=${all_dep_parts[1]}
 	
