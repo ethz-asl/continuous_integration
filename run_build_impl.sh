@@ -72,16 +72,26 @@ DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
 
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
-for dependency in ${DEPENDENCIES}
-do
+for dependency_w_branch in ${DEPENDENCIES}
+do  
+    IFS=';' read -ra all_dep_parts <<< "$dependency_w_branch"
+    dependency=${all_dep_parts[0]}
+    branch=${all_dep_parts[1]}
+    if [ -z "$branch" ]; then
+      branch="master"
+    fi
+	
+	echo Dependency: "$dependency"
+	echo Branch: "$branch"
+	
     foldername_w_ext=${dependency##*/}
     foldername=${foldername_w_ext%.*}
     if [ -d $foldername ]; then
       echo Package "$foldername" exists, running git fetch --depth 1, git reset --hard origin/HEAD and git submodule update --recursive on "$dependency"
-      cd "$foldername" && git fetch --depth 1 && git reset --hard origin/HEAD && git submodule update --recursive && cd ..
+      cd "$foldername" && git fetch --depth 1 && git checkout origin/${branch} && git submodule update --recursive && cd ..
     else
       echo Package "$foldername" does not exists, running git clone "$dependency" --recursive
-      git clone "$dependency" --recursive --depth 1 --single-branch
+      git clone -b ${branch} "$dependency" --recursive --depth 1 --single-branch
     fi
 done
 cd $WORKSPACE
