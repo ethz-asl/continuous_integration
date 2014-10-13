@@ -74,9 +74,16 @@ CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
 for dependency_w_branch in ${DEPENDENCIES}
 do  
-    all_dep_parts=$(echo $dependency_w_branch | tr "?" "\n")
+    old_ifs=$IFS
+    IFS='?'
+    all_dep_parts=$dependency_w_branch
+    IFS=$OIFS
     dependency=${all_dep_parts[0]}
     branch=${all_dep_parts[1]}
+	
+	echo Dependency: "$dependency"
+	echo Branch: "$branch"
+	
     if [ -z "$branch" ]; then
       branch="master"
     fi
