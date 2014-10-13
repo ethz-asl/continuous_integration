@@ -75,7 +75,7 @@ mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
 for dependency_w_branch in ${DEPENDENCIES}
 do  
     old_ifs=$IFS
-    IFS='?'
+    IFS=';'
     all_dep_parts=$dependency_w_branch
     IFS=$OIFS
     dependency=${all_dep_parts[0]}
