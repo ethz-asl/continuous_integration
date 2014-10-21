@@ -45,6 +45,13 @@ echo "Execute integration tests: ${RUN_TESTS}"
 echo "Run cppcheck: ${RUN_CPPCHECK}"
 echo "-----------------------------"
 
+# If we are on a mac we only support Apple Clang for now.
+unamestr=`uname`
+if [[ "$unamestr" == 'Darwin' ]]; then
+  echo "Running on OSX setting compiler to clang."
+  $COMPILER=clang
+fi
+
 echo "Compilers:"
 echo "-----------------------------"
 if [ "$COMPILER" == "gcc" ]
