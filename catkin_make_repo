@@ -1,6 +1,6 @@
 #!/bin/bash
 source /opt/ros/indigo/setup.sh
-export PATH=/usr/lib/ccache:/usr/local/bin/:$PATH
+export PATH=/usr/lib/ccache:/usr/local/bin/:/usr/local/opt/ccache/libexec/:$PATH
 
 RUN_TESTS=$1
 PACKAGES=${*:2}
