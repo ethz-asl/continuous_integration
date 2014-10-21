@@ -72,8 +72,10 @@ DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
 
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
+cwd = ${pwd}
 for dependency_w_branch in ${DEPENDENCIES}
 do  
+    cd ${cwd}
     IFS=';' read -ra all_dep_parts <<< "$dependency_w_branch"
     dependency=${all_dep_parts[0]}
     branch=${all_dep_parts[1]}
