@@ -49,7 +49,7 @@ echo "-----------------------------"
 unamestr=`uname`
 if [[ "$unamestr" == 'Darwin' ]]; then
   echo "Running on OSX setting compiler to clang."
-  $COMPILER="clang"
+  COMPILER="clang"
 fi
 
 echo "Compilers:"
