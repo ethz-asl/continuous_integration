@@ -1,6 +1,6 @@
 #!/bin/bash
 source /opt/ros/indigo/setup.sh
-export PATH=/usr/lib/ccache:$PATH
+export PATH=/usr/lib/ccache:/usr/local/bin/:$PATH
 
 RUN_TESTS=$1
 PACKAGES=${*:2}
@@ -13,6 +13,7 @@ if $RUN_TESTS; then
 else
   echo "Will only build $PACKAGES and skip tests."
 fi
+
 
 catkin build --verbose --no-status $PACKAGES --make-args VERBOSE=1
 ret_code=$?
