@@ -124,12 +124,14 @@ echo "-----------------------------"
 
 #Now run the build.
 if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
-  echo "Running cppcheck $CPPCHECK_PARAMS ..."
-  # Run cppcheck excluding dependencies.
-  cd $WORKSPACE
-  if $RUN_CPPCHECK; then
-    rm -f cppcheck-result.xml
-    cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
+  if [[ "$unamestr" == 'Linux' ]]; then
+    echo "Running cppcheck $CPPCHECK_PARAMS ..."
+    # Run cppcheck excluding dependencies.
+    cd $WORKSPACE
+    if $RUN_CPPCHECK; then
+      rm -f cppcheck-result.xml
+      cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
+    fi
   fi
 else
  exit 1
