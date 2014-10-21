@@ -91,7 +91,7 @@ do
       echo Package "$foldername" exists, running git fetch --depth 1, git reset --hard origin/HEAD and git submodule update --recursive on "$dependency"
       cd "$foldername" && git fetch --depth 1 && git checkout origin/${branch} && git submodule update --recursive && cd ..
     else
-      echo Package "$foldername" does not exists, running git clone "$dependency" --recursive
+      echo Package "$foldername" does not exist, running git clone "$dependency" --recursive
       git clone -b ${branch} "$dependency" --recursive --depth 1 --single-branch
     fi
 done
