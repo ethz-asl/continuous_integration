@@ -13,6 +13,9 @@ ok /is not documented/
 # Build output:
 error /error: /
 
+# CMake errors:
+error /CMake Error/
+
 # Tests:
 #start /FAILURES:/
 ok /test/
