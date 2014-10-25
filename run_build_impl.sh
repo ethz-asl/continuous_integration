@@ -11,6 +11,8 @@ RUN_CPPCHECK=true
 
 DEPS=src/dependencies
 
+echo "******************** $SVN_URL"
+
 # Download / update dependencies.
 for i in "$@"
 do
@@ -50,6 +52,7 @@ if [ -n "${sha1}" ]; then
 		REP=$(dirname "${REP}")
 		echo "Refetching in ${REP} and checking out ${sha1} :"
 		(cd "${REP}" && git fetch origin --depth 1 && git checkout "${sha1}");
+	    cd "${REP}" && repo_url_self=$(git config --get remote.origin.url)
 	else
 		echo "ERROR: Could not find repository to run Jenkins independent refetch."
 	fi
@@ -133,7 +136,6 @@ then
     echo "Dependencies specified by rosinstall file.";
 	wstool init || true
 	# Remove the entry from the provided rosinstall that specifies this repository itself:
-	repo_url_self=$(git config --get remote.origin.url)
 	grep -iv $repo_url_self ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES} > dependencies.rosinstall
 	echo "Rosinstall to use:"
 	cat dependencies.rosinstall
