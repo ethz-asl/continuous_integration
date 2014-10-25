@@ -51,10 +51,6 @@ do
 	# Read the package name from the xml.
     PACKAGES="${PACKAGES} $(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -v "/")"
 done
-for PKG in $PACKAGES
-do
-echo "Found $PKG by autodiscovery."
-done
 
 echo "Parameters:"
 echo "-----------------------------"
