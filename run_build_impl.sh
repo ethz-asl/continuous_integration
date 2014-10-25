@@ -41,6 +41,7 @@ esac
 done
 
 if [ -z "$ROSINSTALL_FILE" ]; then
+	echo "No rosinstall file specified, using dependency list from build-job config."
 else
 	echo "ROSINSTALL file: $ROSINSTALL_FILE specified, overwriting specified dependencies."
 	DEPENDENCIES=$ROSINSTALL_FILE
