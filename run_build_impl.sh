@@ -40,19 +40,22 @@ case $i in
 esac
 done
 
-# Refetch the repository as it is not reliably done by Jenkins!
-echo -e "\nExecuting Jenkins independent refetch:"
 cd $WORKSPACE
 echo "-----------------------------"
+# Locate the main folder everything is checked out into.
+REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
+if [ -n "${REP}" ]; then
+	REP=$(dirname "${REP}")
+    cd "${REP}" && repo_url_self=$(git config --get remote.origin.url)
+else
+	echo "ERROR: Could not find repository to run Jenkins independent refetch."
+	exit 1
+fi
+
+# Refetch the repository as it is not reliably done by Jenkins!
+echo -e "\nExecuting Jenkins independent refetch:"
 if [ -n "${sha1}" ]; then
-	REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
-	if [ -n "${REP}" ]; then
-		REP=$(dirname "${REP}")
-		echo "Refetching in ${REP} and checking out ${sha1} :"
-		(cd "${REP}" && git fetch origin --depth 1 && git checkout "${sha1}");
-	else
-		echo "ERROR: Could not find repository to run Jenkins independent refetch."
-	fi
+	cd "${REP}" && repo_url_self=$(git config --get remote.origin.url)
 else
 	echo "SKIPPING: Variable sha1 not set or empty!"
 fi
@@ -132,7 +135,11 @@ then
 
     echo "Dependencies specified by rosinstall file.";
 	wstool init || true
-	wstool merge -t . ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES}
+	# Remove the entry from the provided rosinstall that specifies this repository itself (if any).
+	grep -iv $repo_url_self ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES} > dependencies.rosinstall
+	echo "Rosinstall to use:"
+	cat dependencies.rosinstall
+	wstool merge -t . dependencies.rosinstall
 	wstool update -t . -j8
 else
 	DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
