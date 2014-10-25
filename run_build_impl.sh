@@ -50,7 +50,6 @@ for package_xml in ${all_package_xmls}
 do
 	# Read the package name from the xml.
     package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
-    echo "Found $package by autodiscovery."
 	PACKAGES="${PACKAGES} $package"
 done
 echo "Found $PACKAGES by autodiscovery."
