@@ -102,6 +102,7 @@ then
 	source /opt/ros/indigo/setup.sh
 	cd $WORKSPACE/src
 	catkin_init_workspace || true
+	
 	# Make a separate workspace for the deps.
 	mkdir -p $WORKSPACE/$DEPS
 	cd $WORKSPACE/$DEPS
@@ -112,8 +113,10 @@ then
 	wstool update -t . -j8
 	wstool merge -t . ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES}
 	wstool update -t . -j8
+	
 	# Now overlay our main workspace with the workspace for the deps.
 	cd $WORKSPACE/src
+	wstool init || true
 	wstool merge -t . ${WORKSPACE}/${DEPS}
 else
 	DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
