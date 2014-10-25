@@ -132,7 +132,11 @@ then
 
     echo "Dependencies specified by rosinstall file.";
 	wstool init || true
-	wstool merge -t . ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES}
+	# Remove the entry from the provided rosinstall that specifies this repository itself:
+	repo_url_self=$(git config --get remote.origin.url)
+	grep -iv $repo_url_self ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES} dependencies.rosinstall
+	
+	wstool merge -t . dependencies.rosinstall
 	wstool update -t . -j8
 else
 	DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
