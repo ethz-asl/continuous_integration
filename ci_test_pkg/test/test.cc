@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include<eigen-checks/gtest.h>
+#include <eigen-checks/gtest.h>
 
 TEST(CITest, Test) {
 	EXPECT_EQ(1 + 1, 2);
