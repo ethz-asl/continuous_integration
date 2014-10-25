@@ -134,7 +134,7 @@ then
 	wstool init || true
 	# Remove the entry from the provided rosinstall that specifies this repository itself:
 	repo_url_self=$(git config --get remote.origin.url)
-	grep -iv $repo_url_self ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES} dependencies.rosinstall
+	grep -iv $repo_url_self ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES} > dependencies.rosinstall
 	echo "Rosinstall to use:"
 	cat dependencies.rosinstall
 	wstool merge -t . dependencies.rosinstall
