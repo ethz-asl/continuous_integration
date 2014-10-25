@@ -133,12 +133,6 @@ then
     echo "Dependencies specified by rosinstall file.";
 	wstool init || true
 	wstool merge -t . ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES}
-	
-	# Now overlay our main workspace with the workspace for the deps.
-	cd $WORKSPACE/src
-	echo "Merging $WORKSPACE/src with ${WORKSPACE}/${DEPS}"
-	wstool merge -t . ${WORKSPACE}/${DEPS}
-	echo "Updating $WORKSPACE/src"
 	wstool update -t . -j8
 else
 	DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
