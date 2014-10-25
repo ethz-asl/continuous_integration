@@ -42,15 +42,14 @@ done
 
 # If no packages are defined, we select all packages that are non-dependencies:
 # Get all package xmls in the tree, which are non dependencies.
-all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS/*")"
+all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS")"
 if [ -z "$PACKAGES" ]; then
 PACKAGES=""
 echo "Auto discovering packages to build."
 for package_xml in ${all_package_xmls}
 do
 	# Read the package name from the xml.
-    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -v "/")"
-	package=${package#$-------}
+    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
     echo "Found $package by autodiscovery."
 	PACKAGES="${PACKAGES} $package"
 done
