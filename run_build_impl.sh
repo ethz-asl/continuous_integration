@@ -49,7 +49,7 @@ echo "Auto discovering packages to build."
 for package_xml in ${all_package_xmls}
 do
 	# Read the package name from the xml.
-    PACKAGES="${PACKAGES} $(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -v "/")"
+    PACKAGES="${PACKAGES} $(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -v "/|-")"
 done
 echo "Found $PACKAGES by autodiscovery."
 fi
