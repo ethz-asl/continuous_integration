@@ -40,19 +40,24 @@ case $i in
 esac
 done
 
-# If no packages are defined, we select all packages that are non-dependencies:
+if [ -z "$ROSINSTALL_FILE" ]; then
+else
+	echo "ROSINSTALL file: $ROSINSTALL_FILE specified, overwriting specified dependencies."
+	DEPENDENCIES=$ROSINSTALL_FILE
+fi
+
+# If no packages are defined, we select all packages that are non-dependencies.
 # Get all package xmls in the tree, which are non dependencies.
-all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS")"
 if [ -z "$PACKAGES" ]; then
-PACKAGES=""
-echo "Auto discovering packages to build."
-for package_xml in ${all_package_xmls}
-do
-	# Read the package name from the xml.
-    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
-	PACKAGES="${PACKAGES} $package"
-done
-echo "Found $PACKAGES by autodiscovery."
+    all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS")"
+	echo "Auto discovering packages to build."
+	for package_xml in ${all_package_xmls}
+	do
+		# Read the package name from the xml.
+	    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
+		PACKAGES="${PACKAGES} $package"
+	done
+	echo "Found $PACKAGES by autodiscovery."
 fi
 
 echo "Parameters:"
@@ -66,58 +71,71 @@ echo "-----------------------------"
 # If we are on a mac we only support Apple Clang for now.
 unamestr=`uname`
 if [[ "$unamestr" == 'Darwin' ]]; then
-  echo "Running on OSX setting compiler to clang."
-  COMPILER="clang"
+    echo "Running on OSX setting compiler to clang."
+    COMPILER="clang"
 fi
 
 echo "Compilers:"
 echo "-----------------------------"
 if [ "$COMPILER" == "gcc" ]
 then
-gcc -v
-g++ -v
-export CC=gcc
-export CXX=g++
+	gcc -v
+	g++ -v
+	export CC=gcc
+	export CXX=g++
 fi
 if [ "$COMPILER" == "clang" ]
 then
-clang -v
-export CC=clang
-export CXX=clang++
+	clang -v
+	export CC=clang
+	export CXX=clang++
 fi
 echo "-----------------------------"
 
+# Dependencies: Install using rosinstall or list of repositories from the build-job config.
 CATKIN_SIMPLE_URL=git@github.com:catkin/catkin_simple.git
-
-DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
-
-# Prepare cppcheck ignore list. We want to skip dependencies.
-CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
-
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
-for dependency_w_branch in ${DEPENDENCIES}
-do  
-    cd $WORKSPACE/$DEPS
-    IFS=';' read -ra all_dep_parts <<< "$dependency_w_branch"
-    dependency=${all_dep_parts[0]}
-    branch=${all_dep_parts[1]}
-    if [ -z "$branch" ]; then
-      branch="master"
-    fi
+
+if [[ $DEPENDENCIES == *.rosinstall ]]
+then
+	cd $WORKSPACE/src
+	catkin_init_workspace || true
+	wstool init || true
+	cd $WORKSPACE/$DEPS
+    echo "Dependencies specified by rosinstall file.";
+	wstool set -t $WORKSPACE/src aslam_install --git git@github.com:ethz-asl/aslam_install.git -y
+	wstool set -t $WORKSPACE/src catkin_simple --git ${CATKIN_SIMPLE_URL} -y
+	wstool update -t $WORKSPACE/src -j8
+	wstool merge -t $WORKSPACE/src ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES}
+	wstool update -t $WORKSPACE/src -j8
+else
+	DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
+
+	for dependency_w_branch in ${DEPENDENCIES}
+	do  
+	    cd $WORKSPACE/$DEPS
+	    IFS=';' read -ra all_dep_parts <<< "$dependency_w_branch"
+	    dependency=${all_dep_parts[0]}
+	    branch=${all_dep_parts[1]}
+	    if [ -z "$branch" ]; then
+	        branch="master"
+	    fi
 	
-	echo Dependency: "$dependency"
-	echo Branch: "$branch"
+		echo Dependency: "$dependency"
+		echo Branch: "$branch"
 	
-    foldername_w_ext=${dependency##*/}
-    foldername=${foldername_w_ext%.*}
-    if [ -d $foldername ]; then
-      echo Package "$foldername" exists, running git fetch --depth 1, git reset --hard origin/HEAD and git submodule update --recursive on "$dependency"
-      cd "$foldername" && git fetch --depth 1 && git checkout origin/${branch} && git submodule update --recursive && cd ..
-    else
-      echo Package "$foldername" does not exist, running git clone "$dependency" --recursive
-      git clone -b ${branch} "$dependency" --recursive --depth 1 --single-branch
-    fi
-done
+	    foldername_w_ext=${dependency##*/}
+	    foldername=${foldername_w_ext%.*}
+	    if [ -d $foldername ]; then
+  	        echo Package "$foldername" exists, running git fetch --depth 1, git reset --hard origin/HEAD and git submodule update --recursive on "$dependency"
+  	        cd "$foldername" && git fetch --depth 1 && git checkout origin/${branch} && git submodule update --recursive && cd ..
+	    else
+	        echo Package "$foldername" does not exist, running git clone "$dependency" --recursive
+	        git clone -b ${branch} "$dependency" --recursive --depth 1 --single-branch
+	    fi
+	done
+fi
+
 cd $WORKSPACE
 
 echo -e "\nExecuting Jenkins independent refetch:"
@@ -138,17 +156,20 @@ fi
 echo "-----------------------------"
 
 
+# Prepare cppcheck ignore list. We want to skip dependencies.
+CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
+
 #Now run the build.
 if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
-  if [[ "$unamestr" == 'Linux' ]]; then
-    echo "Running cppcheck $CPPCHECK_PARAMS ..."
-    # Run cppcheck excluding dependencies.
-    cd $WORKSPACE
-    if $RUN_CPPCHECK; then
-      rm -f cppcheck-result.xml
-      cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
+    if [[ "$unamestr" == 'Linux' ]]; then
+      echo "Running cppcheck $CPPCHECK_PARAMS ..."
+      # Run cppcheck excluding dependencies.
+      cd $WORKSPACE
+      if $RUN_CPPCHECK; then
+          rm -f cppcheck-result.xml
+          cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
+      fi
     fi
-  fi
 else
  exit 1
 fi
