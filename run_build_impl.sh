@@ -76,7 +76,7 @@ fi
 if [ -z "$rosinstall_file" ]; then
 	echo "No rosinstall file specified, using dependency list from build-job config."
 else
-	echo "ROSINSTALL file: $rosinstall_file specified, overwriting specified dependencies."
+	echo "Rosinstall file: $rosinstall_file specified, overwriting specified dependencies."
 	DEPENDENCIES=$rosinstall_file
 fi
 
