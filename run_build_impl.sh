@@ -45,11 +45,11 @@ echo "-----------------------------"
 # Locate the main folder everything is checked out into.
 REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
 if [ -n "${REP}" ]; then
-	REP=$(dirname "${REP}")
+    REP=$(dirname "${REP}")
     cd "${REP}" && repo_url_self=$(git config --get remote.origin.url)
 else
-	echo "ERROR: Could not find repository to run Jenkins independent refetch."
-	exit 1
+    echo "ERROR: Could not find repository to run Jenkins independent refetch."
+    exit 1
 fi
 
 # Refetch the repository as it is not reliably done by Jenkins!
