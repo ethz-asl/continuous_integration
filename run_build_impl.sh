@@ -121,21 +121,22 @@ then
 	source /opt/ros/indigo/setup.sh
 	cd $WORKSPACE/src
 	catkin_init_workspace || true
+	wstool init || true
 	
 	# Make a separate workspace for the deps.
 	mkdir -p $WORKSPACE/$DEPS
 	cd $WORKSPACE/$DEPS
-	wstool init || true
+	wstool set -t $WORKSPACE/src aslam_install --git git@github.com:ethz-asl/aslam_install.git -y
+	wstool set -t $WORKSPACE/src catkin_simple --git ${CATKIN_SIMPLE_URL} -y
+	wstool update -t $WORKSPACE/src -j8
+
     echo "Dependencies specified by rosinstall file.";
-	wstool set -t . aslam_install --git git@github.com:ethz-asl/aslam_install.git -y
-	wstool set -t . catkin_simple --git ${CATKIN_SIMPLE_URL} -y
-	wstool update -t . -j8
+	wstool init || true
 	wstool merge -t . ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES}
 	wstool update -t . -j8
 	
 	# Now overlay our main workspace with the workspace for the deps.
 	cd $WORKSPACE/src
-	wstool init || true
 	wstool merge -t . ${WORKSPACE}/${DEPS}
 else
 	DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
