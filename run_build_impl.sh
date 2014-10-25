@@ -40,12 +40,23 @@ case $i in
 esac
 done
 
-if [ -z "$rosinstall_file" ]; then
-	echo "No rosinstall file specified, using dependency list from build-job config."
+# Refetch the repository as it is not reliably done by Jenkins!
+echo -e "\nExecuting Jenkins independent refetch:"
+cd $WORKSPACE
+echo "-----------------------------"
+if [ -n "${sha1}" ]; then
+	REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
+	if [ -n "${REP}" ]; then
+		REP=$(dirname "${REP}")
+		echo "Refetching in ${REP} and checking out ${sha1} :"
+		(cd "${REP}" && git fetch origin --depth 1 && git checkout "${sha1}");
+	else
+		echo "ERROR: Could not find repository to run Jenkins independent refetch."
+	fi
 else
-	echo "ROSINSTALL file: $rosinstall_file specified, overwriting specified dependencies."
-	DEPENDENCIES=$rosinstall_file
+	echo "SKIPPING: Variable sha1 not set or empty!"
 fi
+echo "-----------------------------"
 
 # If no packages are defined, we select all packages that are non-dependencies.
 # Get all package xmls in the tree, which are non dependencies.
@@ -59,6 +70,14 @@ if [ -z "$PACKAGES" ]; then
 		PACKAGES="${PACKAGES} $package"
 	done
 	echo "Found $PACKAGES by autodiscovery."
+fi
+
+# If the build job specifies a rosinstall file, we overwrite the build-job config dep list.
+if [ -z "$rosinstall_file" ]; then
+	echo "No rosinstall file specified, using dependency list from build-job config."
+else
+	echo "ROSINSTALL file: $rosinstall_file specified, overwriting specified dependencies."
+	DEPENDENCIES=$rosinstall_file
 fi
 
 echo "Parameters:"
@@ -147,24 +166,6 @@ else
 fi
 
 cd $WORKSPACE
-
-echo -e "\nExecuting Jenkins independent refetch:"
-echo "-----------------------------"
-# Refetch the rep as it is not reliably done by Jenkins!
-if [ -n "${sha1}" ]; then
-	REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
-	if [ -n "${REP}" ]; then
-		REP=$(dirname "${REP}")
-		echo "Refetching in ${REP} and checking out ${sha1} :"
-		(cd "${REP}" && git fetch origin --depth 1 && git checkout "${sha1}");
-	else
-		echo "ERROR: Could not find repository to run Jenkins independent refetch."
-	fi
-else
-	echo "SKIPPING: Variable sha1 not set or empty!"
-fi
-echo "-----------------------------"
-
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
