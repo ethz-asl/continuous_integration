@@ -123,7 +123,7 @@ then
 	catkin_init_workspace || true
 	wstool init || true
 	
-	# Make a separate workspace for the deps.
+	# Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
 	mkdir -p $WORKSPACE/$DEPS
 	cd $WORKSPACE/$DEPS
 	wstool set -t $WORKSPACE/src aslam_install --git git@github.com:ethz-asl/aslam_install.git -y
