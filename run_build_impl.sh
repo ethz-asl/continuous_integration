@@ -9,6 +9,8 @@ COMPILER="gcc"
 RUN_TESTS=true
 RUN_CPPCHECK=true
 
+DEPS=src/dependencies
+
 # Download / update dependencies.
 for i in "$@"
 do
@@ -37,6 +39,22 @@ case $i in
     ;;
 esac
 done
+
+# If no packages are defined, we select all packages that are non-dependencies:
+# Get all package xmls in the tree, which are non dependencies.
+all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS")"
+if [ -z "$PACKAGES" ]; then
+PACKAGES=""
+echo "Auto discovering packages to build."
+for package_xml in ${all_package_xmls}
+do
+	# Read the package name from the xml.
+    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
+	PACKAGES="${PACKAGES} $package"
+done
+echo "Found $PACKAGES by autodiscovery."
+fi
+
 echo "Parameters:"
 echo "-----------------------------"
 echo "Packages: ${PACKAGES}"
@@ -68,8 +86,6 @@ export CC=clang
 export CXX=clang++
 fi
 echo "-----------------------------"
-
-DEPS=src/dependencies
 
 CATKIN_SIMPLE_URL=git@github.com:catkin/catkin_simple.git
 
