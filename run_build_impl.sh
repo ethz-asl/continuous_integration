@@ -42,7 +42,7 @@ done
 
 # If no packages are defined, we select all packages that are non-dependencies:
 # Get all package xmls in the tree, which are non dependencies.
-all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS/*")"
+all_package_xmls="$(find . -name "package.xml" | grep -v "*dependencies/*")"
 if [ -z "$PACKAGES" ]; then
 PACKAGES=""
 echo "Auto discovering packages to build."
