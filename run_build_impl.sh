@@ -50,12 +50,9 @@ for package_xml in ${all_package_xmls}
 do
 	# Read the package name from the xml.
     package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -v "/")"
+	package=${package#$-------}
     echo "Found $package by autodiscovery."
-	if [ "$package" == "-----" ]; then
-		echo "skip"
-	else
-	    PACKAGES="${PACKAGES} $package"
-	fi
+	PACKAGES="${PACKAGES} $package"
 done
 echo "Found $PACKAGES by autodiscovery."
 fi
