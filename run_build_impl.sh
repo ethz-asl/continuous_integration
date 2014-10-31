@@ -80,7 +80,7 @@ if [ -z "$PACKAGES" ]; then
 	    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
 		containsElement $package $non_ignored_packages[@]
         is_package_not_ignored=$?
-        if [[ "$is_package_not_ignored" == 1 ]]; then
+        if [[ "$is_package_not_ignored" == "1" ]]; then
             PACKAGES="${PACKAGES} $package"
 		else
 			echo "Skipping package $package since the package contains CATKIN_IGNORE."
