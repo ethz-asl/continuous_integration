@@ -78,7 +78,8 @@ if [ -z "$PACKAGES" ]; then
 	do
 		# Read the package name from the xml.
 	    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
-        is_package_not_ignored=containsElement $package "${non_ignored_packages[@]}"
+		containsElement $package $non_ignored_packages[@]
+        is_package_not_ignored=$?
         if [[ "$is_package_not_ignored" == 1 ]]; then
             PACKAGES="${PACKAGES} $package"
 		else
