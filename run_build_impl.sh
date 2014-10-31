@@ -63,29 +63,30 @@ echo "-----------------------------"
 
 # If no packages are defined, we select all packages that are non-dependencies.
 # Get all package xmls in the tree, which are non dependencies.
-containsElement () {
-	local haystack=${1}[@]
-	local needle=${2}
-	for i in ${!haystack}; do
-	    if [[ ${i} == ${needle} ]]; then
-	        return 0
-	    fi
-	done
-	return 1
+contains () {
+    local n=$#
+    local value=${!n}
+    for ((i=1;i < $#;i++)) {
+        if [ "${!i}" == "${value}" ]; then
+            echo "y"
+            return 0
+        fi
+    }
+    echo "n"
+    return 1
 }
 
 if [ -z "$PACKAGES" ]; then
     all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS")"
 	echo "Auto discovering packages to build."
-	non_ignored_packages="$(catkin list)"
 	
 	for package_xml in ${all_package_xmls}
 	do
 		# Read the package name from the xml.
 	    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
-		containsElement non_ignored_packages package && is_package_not_ignored=1 || is_package_not_ignored=0        
-        if [[ "$is_package_not_ignored" == 1 ]]; then
-            PACKAGES="${PACKAGES} $package"
+		pkg_path=${package_xml%package.xml}
+		if [ ! -f "${pkg_path}/CATKIN_IGNORE" ]; then
+		    PACKAGES="${PACKAGES} $package"
 			echo "Added package $package."
 		else
 			echo "Skipping package $package since the package contains CATKIN_IGNORE."
