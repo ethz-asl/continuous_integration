@@ -63,14 +63,25 @@ echo "-----------------------------"
 
 # If no packages are defined, we select all packages that are non-dependencies.
 # Get all package xmls in the tree, which are non dependencies.
+containsElement () {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 1; done
+  return 0
+}
+
 if [ -z "$PACKAGES" ]; then
     all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS")"
 	echo "Auto discovering packages to build."
+	non_ignored_packages="$(catkin list)"
+	
 	for package_xml in ${all_package_xmls}
 	do
 		# Read the package name from the xml.
 	    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
-		PACKAGES="${PACKAGES} $package"
+		is_package_not_ignored=containsElement $package "${non_ignored_packages[@]}"
+		if [[ "$is_package_not_ignored" == 1 ]]; then
+		  PACKAGES="${PACKAGES} $package"
+	    fi
 	done
 	echo "Found $PACKAGES by autodiscovery."
 fi
