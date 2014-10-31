@@ -81,6 +81,8 @@ if [ -z "$PACKAGES" ]; then
         is_package_not_ignored=containsElement $package "${non_ignored_packages[@]}"
         if [[ "$is_package_not_ignored" == 1 ]]; then
             PACKAGES="${PACKAGES} $package"
+		else
+			echo "Skipping package $package since the package contains CATKIN_IGNORE."
 	    fi
 	done
 	echo "Found $PACKAGES by autodiscovery."
