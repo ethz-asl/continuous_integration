@@ -66,11 +66,18 @@ echo "-----------------------------"
 if [ -z "$PACKAGES" ]; then
     all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS")"
 	echo "Auto discovering packages to build."
+	
 	for package_xml in ${all_package_xmls}
 	do
 		# Read the package name from the xml.
 	    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
-		PACKAGES="${PACKAGES} $package"
+		pkg_path=${package_xml%package.xml}
+		if [ ! -f "${pkg_path}/CATKIN_IGNORE" ]; then
+		    PACKAGES="${PACKAGES} $package"
+			echo "Added package $package."
+		else
+			echo "Skipping package $package since the package contains CATKIN_IGNORE."
+	    fi
 	done
 	echo "Found $PACKAGES by autodiscovery."
 fi
