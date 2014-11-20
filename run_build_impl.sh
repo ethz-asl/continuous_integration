@@ -1,4 +1,5 @@
 #!/bin/bash
+export PATH=/usr/local/bin/:$PATH
 
 source /opt/ros/indigo/setup.sh
 # Get the directory of this script.
