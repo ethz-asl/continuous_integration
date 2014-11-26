@@ -15,7 +15,7 @@ else
 fi
 
 
-catkin build --verbose --no-status $PACKAGES --make-args VERBOSE=1 -O2
+catkin build --verbose --no-status $PACKAGES --make-args VERBOSE=1 O2
 ret_code=$?
 if [ $ret_code != 0 ]; then
   exit $ret_code
