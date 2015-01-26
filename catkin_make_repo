@@ -32,7 +32,7 @@ if $RUN_TESTS; then
   do
     echo "*** $PACKAGE -- Attempting to run unit tests."
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
-    OUTPUT=$(cd $WORKSPACE/build/$PACKAGE && make run_tests -j8 VERBOSE=1|tee >(cat - >&2))
+    OUTPUT=$(cd $WORKSPACE/build/$PACKAGE && make tests -j8 && make run_tests VERBOSE=1|tee >(cat - >&2))
     ret_code=$?
 
     # Try to figure out if things failed because there are no unit tests
