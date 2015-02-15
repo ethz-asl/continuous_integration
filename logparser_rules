@@ -6,6 +6,8 @@ ok /[Ee]rror::/
 ok /libdc1394/
 # make clean errors are also ok
 ok /(ignored)/
+# Errors in STXXL are ok
+ok /STXXL-ERRMSG/
 
 # ignore doxygen warnings
 ok /is not documented/
