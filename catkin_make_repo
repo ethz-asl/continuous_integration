@@ -49,8 +49,8 @@ if $RUN_TESTS; then
             exit $ret_code
         else
             echo "*** $PACKAGE -- Unit tests succeeded"
-	    echo "*** $PACKAGE -- Copy unit test results to common folder."
-	    cp -r $WORKSPACE/build/$PACKAGE/test_results/$PACKAGE $TEST_RESULTS_FOLDER/
+            echo "*** $PACKAGE -- Copy unit test results to common folder."
+            cp -r $WORKSPACE/build/$PACKAGE/test_results/$PACKAGE $TEST_RESULTS_FOLDER/
         fi
     else
         echo "*** $PACKAGE -- No unit tests found"
