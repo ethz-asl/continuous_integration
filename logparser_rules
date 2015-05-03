@@ -26,6 +26,9 @@ error /CMake Error/
 ok /test/
 ok /\[FAILURE\]/ # We parse test errors separately.
 
+# Test segmentation fault:
+error /Segmentation fault/
+
 # Build output:
 error /[Ee]rror: /
 error /ld: cannot find/
