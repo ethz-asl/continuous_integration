@@ -15,6 +15,9 @@ ok /is not documented/
 # Build output:
 error /error: /
 
+# glog check failures in tests:
+error /Check failure stack trace:/
+
 # CMake errors:
 error /CMake Error/
 
