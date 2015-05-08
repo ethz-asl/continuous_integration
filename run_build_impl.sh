@@ -137,9 +137,9 @@ then
 	
 	# Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
 	mkdir -p $WORKSPACE/$DEPS
-	cd $WORKSPACE/$DEPS
-	echo "- git: {local-name: catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | wstool  merge -t $WORKSPACE/src -
-	echo "- git: {local-name: aslam_install, uri: 'git@github.com:ethz-asl/aslam_install.git'}" | wstool  merge -t $WORKSPACE/src -
+	cd $WORKSPACE/$DEPS	
+	echo "- git: {local-name: $DEPS/aslam_install, uri: 'git@github.com:ethz-asl/aslam_install.git'}" | wstool  merge -t $WORKSPACE/src -
+	echo "- git: {local-name: $DEPS/catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | wstool  merge -t $WORKSPACE/src -
 	wstool update -t $WORKSPACE/src -j8
 
     echo "Dependencies specified by rosinstall file.";
