@@ -133,7 +133,10 @@ then
 	source /opt/ros/indigo/setup.sh
 	cd $WORKSPACE/src
 	catkin_init_workspace || true
-	wstool init || true
+	if [ ! -f .rosinstall ] 
+	then
+	    wstool init || true
+	fi
 	
 	# Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
 	mkdir -p $WORKSPACE/$DEPS
@@ -143,7 +146,10 @@ then
 	wstool update -t $WORKSPACE/src -j8
 
     echo "Dependencies specified by rosinstall file.";
-	wstool init || true
+	if [ ! -f .rosinstall ] 
+	then
+	    wstool init || true
+	fi
 	# Remove the entry from the provided rosinstall that specifies this repository itself (if any).
 	grep -iv $repo_url_self ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES} > dependencies.rosinstall
 	echo "Rosinstall to use:"
