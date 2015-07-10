@@ -74,11 +74,13 @@ if [ -z "$PACKAGES" ]; then
 		# Read the package name from the xml.
 	    package="$(echo 'cat //name/text()' | xmllint --shell ${package_xml} | grep -Ev "/|-")"
 		pkg_path=${package_xml%package.xml}
-		if [ ! -f "${pkg_path}/CATKIN_IGNORE" ]; then
-		    PACKAGES="${PACKAGES} $package"
-			echo "Added package $package."
-		else
+		if [ -f "${pkg_path}/CATKIN_IGNORE" ]; then
 			echo "Skipping package $package since the package contains CATKIN_IGNORE."
+		elif [ -f "${pkg_path}/CI_IGNORE" ]; then
+			echo "Skipping package $package since the package contains CI_IGNORE."
+		else
+			PACKAGES="${PACKAGES} $package"
+			echo "Added package $package."
 	    fi
 	done
 	echo "Found $PACKAGES by autodiscovery."
