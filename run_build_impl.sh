@@ -48,19 +48,10 @@ echo "-----------------------------"
 REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
 if [ -n "${REP}" ]; then
   REP=$(dirname "${REP}")
-  cd "${REP}" && repo_url_self=$(git config --get remote.origin.url)
-else
-  echo "ERROR: Could not find repository to run Jenkins independent refetch."
-  exit 1
+  repo_url_self=$(cd "${REP}" && git config --get remote.origin.url)
+  echo "Found my repository at ${REP}: repo_url_self=${repo_url_self}."
 fi
 
-# Refetch the repository as it is not reliably done by Jenkins!
-echo -e "\nExecuting Jenkins independent refetch:"
-if [ -n "${sha1}" ]; then
-  cd "${REP}" && repo_url_self=$(git config --get remote.origin.url)
-else
-  echo "SKIPPING: Variable sha1 not set or empty!"
-fi
 echo "-----------------------------"
 
 # If no packages are defined, we select all packages that are non-dependencies.
