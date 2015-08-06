@@ -10,6 +10,7 @@ DEPENDENCIES=""
 COMPILER="gcc"
 RUN_TESTS=true
 RUN_CPPCHECK=true
+CHECKOUT_CATKIN_SIMPLE=true
 
 DEPS=src/dependencies
 
@@ -32,12 +33,16 @@ case $i in
   -n|--no_cppcheck)
   RUN_CPPCHECK=false
   ;;
+  -s|--no_catkinsimple)
+  CHECKOUT_CATKIN_SIMPLE=false
+  ;;
   *)
     echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git]"
     echo "  [{-p|--packages}=packages]"
     echo "  [{--compiler}=gcc/clang]"
     echo "  [{-t|--no_tests} skip gtest execution]"
     echo "  [{-c|--no_cppcheck} skip cppcheck execution]"
+    echo "  [{-s|--no_catkinsimple} skip checking out catkin simple]"
   ;;
 esac
 done
@@ -59,7 +64,7 @@ echo "-----------------------------"
 if [ -z "$PACKAGES" ]; then
   all_package_xmls="$(find . -name "package.xml" | grep -v "$DEPS")"
   echo "Auto discovering packages to build."
-  
+
   for package_xml in ${all_package_xmls}
   do
     # Read the package name from the xml.
@@ -91,6 +96,7 @@ echo "Packages: ${PACKAGES}"
 echo "Dependencies: ${DEPENDENCIES}"
 echo "Execute integration tests: ${RUN_TESTS}"
 echo "Run cppcheck: ${RUN_CPPCHECK}"
+echo "Checkout catkin simple: ${CHECKOUT_CATKIN_SIMPLE}"
 echo "-----------------------------"
 
 # If we are on a mac we only support Apple Clang for now.
@@ -118,7 +124,12 @@ fi
 echo "-----------------------------"
 
 # Dependencies: Install using rosinstall or list of repositories from the build-job config.
-CATKIN_SIMPLE_URL=git@github.com:catkin/catkin_simple.git
+
+if $CHECKOUT_CATKIN_SIMPLE; then
+  CATKIN_SIMPLE_URL=""
+else
+  CATKIN_SIMPLE_URL=git@github.com:catkin/catkin_simple.git
+fi
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
 
 if [[ $DEPENDENCIES == *.rosinstall ]]
@@ -126,20 +137,20 @@ then
   source /opt/ros/indigo/setup.sh
   cd $WORKSPACE/src
   catkin_init_workspace || true
-  if [ ! -f .rosinstall ] 
+  if [ ! -f .rosinstall ]
   then
     wstool init || true
   fi
-  
+
   # Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
   mkdir -p $WORKSPACE/$DEPS
-  cd $WORKSPACE/$DEPS  
+  cd $WORKSPACE/$DEPS
   echo "- git: {local-name: $WORKSPACE/$DEPS/aslam_install, uri: 'git@github.com:ethz-asl/aslam_install.git'}" | wstool  merge -t $WORKSPACE/src -
   echo "- git: {local-name: $WORKSPACE/$DEPS/catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | wstool  merge -t $WORKSPACE/src -
   wstool update -t $WORKSPACE/src -j8
 
   echo "Dependencies specified by rosinstall file.";
-  if [ ! -f .rosinstall ] 
+  if [ ! -f .rosinstall ]
   then
     wstool init || true
   fi
@@ -161,10 +172,10 @@ else
     if [ -z "$branch" ]; then
       branch="master"
     fi
-  
+
     echo Dependency: "$dependency"
     echo Branch: "$branch"
-  
+
     foldername_w_ext=${dependency##*/}
     foldername=${foldername_w_ext%.*}
     if [ -d $foldername ]; then
