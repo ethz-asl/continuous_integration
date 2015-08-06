@@ -6,6 +6,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Reload ci scripts from repo.
 cd $DIR
+git checkout master
 git pull
 cd $CWD
 
