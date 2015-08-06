@@ -146,7 +146,10 @@ then
   mkdir -p $WORKSPACE/$DEPS
   cd $WORKSPACE/$DEPS
   echo "- git: {local-name: $WORKSPACE/$DEPS/aslam_install, uri: 'git@github.com:ethz-asl/aslam_install.git'}" | wstool  merge -t $WORKSPACE/src -
-  echo "- git: {local-name: $WORKSPACE/$DEPS/catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | wstool  merge -t $WORKSPACE/src -
+
+  if $CHECKOUT_CATKIN_SIMPLE; then
+    echo "- git: {local-name: $WORKSPACE/$DEPS/catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | wstool  merge -t $WORKSPACE/src -
+  fi
   wstool update -t $WORKSPACE/src -j8
 
   echo "Dependencies specified by rosinstall file.";
