@@ -126,9 +126,9 @@ echo "-----------------------------"
 # Dependencies: Install using rosinstall or list of repositories from the build-job config.
 
 if $CHECKOUT_CATKIN_SIMPLE; then
-  CATKIN_SIMPLE_URL=""
-else
   CATKIN_SIMPLE_URL=git@github.com:catkin/catkin_simple.git
+else
+  CATKIN_SIMPLE_URL=""
 fi
 mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
 
