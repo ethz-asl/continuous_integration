@@ -10,6 +10,8 @@ DEPENDENCIES=""
 COMPILER="gcc"
 RUN_TESTS=true
 RUN_CPPCHECK=true
+# TODO(hitimo): Replace variable by a bool in parametrized build.
+RUN_AUTOMATIC_EVALUATION=true
 CHECKOUT_CATKIN_SIMPLE=true
 
 DEPS=src/dependencies
@@ -189,6 +191,23 @@ else
       git clone -b ${branch} "$dependency" --recursive --depth 1 --single-branch
     fi
   done
+fi
+
+# Automatic ground truth evaluation.
+if RUN_AUTOMATIC_EVALUATION; then
+  # Rotary dataset.
+  path_to_automatic_evaluation_repo=$WORKSPACE/$path_to_automatic_evaluation_repo
+  path_to_datasets=$path_to_automatic_evaluation_repo/$path_to_rotary_data
+  path_to_evaluation=$WORKSPACE/$path_to_python_evaluation_script
+  # The result directory consists of the current date and time.
+  output=$((python $path_to_evaluation/run_evaluation.py --job ci_jobs/job_euroc.yaml --dataset_path $path_to_datasets) 2>&1)
+  result_directory=$(echo $output | awk '{ print $(NF) }')
+  # Move the evaluation to the automatic evaluation repository and upload the results.
+  mv $result_directory $path_to_automatic_evaluation_repo/$path_to_rotary_results
+  cd $path_to_automatic_evaluation_repo
+  git add .
+  git commit -m "New results from automatic evaluation (rotary)."
+  git push origin master
 fi
 
 cd $WORKSPACE
