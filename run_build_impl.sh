@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 export PATH=/usr/local/bin/:$PATH
 
 source /opt/ros/indigo/setup.sh

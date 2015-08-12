@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 ## This script does nothing but update the local repo and then forward everything
 ## to the actual build script which by this time is updated from the remote.
 CWD=$(pwd)
