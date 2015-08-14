@@ -12,7 +12,7 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(testTools.rev_parse(folder, 'HEAD'), sha1, "Dependency folder %s is not checked out with revision %s" % (folder, sha1))
 
     def test_external_check(self):
-        toEval = os.environ['TEST_DEPENDENCIES'];
+        toEval = os.environ[testTools.CheckEnvVariable];
         print "ToEval:" + toEval;
         eval(toEval)
 
