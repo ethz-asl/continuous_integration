@@ -64,7 +64,6 @@ class TestCi(unittest.TestCase):
             env[testTools.CheckEnvVariable] = "self.checkDependency('../../src/dependencies/%s', '%s')" % (rep, sha1);
             self._testRunBuild(['--dependencies=%s' % dependencies,  '--packages=test_package', '-s', '-n'])
             if xunitPath:
-                print 'xunitPath', xunitPath
                 self._exec(['mv', Workspace + '/test_results/test_package/nosetests-TestPackage.py.xml', str(os.path.join(xunitPath, inspect.stack()[1][3] + '.xml'))]);
 
     def test_simpleBranchName(self):
