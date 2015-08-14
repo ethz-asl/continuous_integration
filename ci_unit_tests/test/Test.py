@@ -11,6 +11,7 @@ Workspace = TestDir + '/workspace';
 sys.path.append(TestDir)
 
 env=os.environ
+env.pop('rosinstall_file', None)
 
 xunitPath=None
 for arg in sys.argv :
