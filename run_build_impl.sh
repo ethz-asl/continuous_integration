@@ -92,6 +92,7 @@ fi
 
 echo "Parameters:"
 echo "-----------------------------"
+echo "Workspace: ${WORKSPACE}"
 echo "Packages: ${PACKAGES}"
 echo "Dependencies: ${DEPENDENCIES}"
 echo "Execute integration tests: ${RUN_TESTS}"
