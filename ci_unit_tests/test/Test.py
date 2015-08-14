@@ -7,8 +7,10 @@ import inspect
 import re
 
 TestDir = os.getcwd()
-Workspace = TestDir + '/workspace';
 sys.path.append(TestDir)
+
+Workspace = TestDir + '/workspace';
+RedirectedWorkspace = '/tmp/ci_unit_tests/workspace';
 
 env=os.environ
 env.pop('rosinstall_file', None)
@@ -27,8 +29,10 @@ class TestCi(unittest.TestCase):
     def _testRunBuild(self, arguments):
         args = ['../../../run_build_impl.sh'];
         args.extend(arguments)
-        env['WORKSPACE'] = Workspace
-        self._exec(args, cwd = Workspace, env = env);
+        self._exec(['mkdir', '-p', os.path.dirname(RedirectedWorkspace)]);
+        self._exec(['ln', '-snf', Workspace, RedirectedWorkspace]);
+        env['WORKSPACE'] = RedirectedWorkspace # this is necessary because catkin does not support nested workspaces!
+        self._exec(args, cwd = RedirectedWorkspace, env = env);
 
     def _test_dependencies(self, revisions):
         import workspace.src.test_package.testTools as testTools
