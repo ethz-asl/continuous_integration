@@ -1,0 +1,30 @@
+********** Testing : git@test.test/simple ************
+DependencySpec: git@test.test/simple
+Dependency: git@test.test/simple
+Revision: origin/master
+Depth: 1
+Foldername: simple
+depth_args: --depth 1
+clone_args: -b master --single-branch
+********** Testing : git@test.test/simpleWithBranch;test_branch ************
+DependencySpec: git@test.test/simpleWithBranch;test_branch
+Dependency: git@test.test/simpleWithBranch
+Revision: origin/test_branch
+Depth: 1
+Foldername: simpleWithBranch
+depth_args: --depth 1
+clone_args: -b test_branch --single-branch
+********** Testing : git@test.test/just_sha1;b66dda2 ************
+DependencySpec: git@test.test/just_sha1;b66dda2
+Dependency: git@test.test/just_sha1
+Revision: b66dda2
+Foldername: just_sha1
+depth_args: 
+clone_args: 
+********** Testing : git@test.test/withGitDescirbeLikeRevision;fix/moveRawAccess-429-gb66dda2 ************
+DependencySpec: git@test.test/withGitDescirbeLikeRevision;fix/moveRawAccess-429-gb66dda2
+Dependency: git@test.test/withGitDescirbeLikeRevision
+Revision: b66dda2
+Foldername: withGitDescirbeLikeRevision
+depth_args: 
+clone_args: 
