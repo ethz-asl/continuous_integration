@@ -170,24 +170,18 @@ else
   for dependency_w_branch in ${DEPENDENCIES}
   do
     cd $WORKSPACE/$DEPS
-    IFS=';' read -ra all_dep_parts <<< "$dependency_w_branch"
-    dependency=${all_dep_parts[0]}
-    branch=${all_dep_parts[1]}
-    if [ -z "$branch" ]; then
-      branch="master"
-    fi
+    
+    source $DIR/modules/parse_dependency.sh
 
-    echo Dependency: "$dependency"
-    echo Branch: "$branch"
-
-    foldername_w_ext=${dependency##*/}
-    foldername=${foldername_w_ext%.*}
     if [ -d $foldername ]; then
-      echo Package "$foldername" exists, running git fetch --depth 1, git reset --hard origin/HEAD and git submodule update --recursive on "$dependency"
-      cd "$foldername" && git fetch --depth 1 && git checkout origin/${branch} && git submodule update --recursive && cd ..
+      echo "Package $foldername exists, running: git fetch $depth_args && git checkout ${revision} && git submodule update --recursive"
+      (cd "$foldername" && git fetch $depth_args && git checkout ${revision} && git submodule update --recursive)
     else
-      echo Package "$foldername" does not exist, running git clone "$dependency" --recursive
-      git clone -b ${branch} "$dependency" --recursive --depth 1 --single-branch
+      echo "Package $foldername does not exist, running: clone $clone_args $depth_args --recursive \"$dependency\""
+      git clone $clone_args $depth_args --recursive "$dependency"
+      if [ -z "$branch" ]; then # this means we know a specific (nameless) commit to checkout
+        (cd "$foldername" && git checkout ${revision} && git submodule update --recursive)
+      fi
     fi
   done
 fi

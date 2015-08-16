@@ -25,6 +25,25 @@ class TestCi(unittest.TestCase):
         retCode = subprocess.call(args, stdout=stdout, env = env, cwd=cwd)
         self.assertEqual(retCode, 0, "The return code of %s should be zero!" % str(args))
         
+    def runTestShellScriptAndAssertEqualOutput(self, script):
+        outDir = 'expected/'
+        
+        outputPath = outDir + script + '.out';
+        
+        outputFd = os.open(outputPath, os.O_TRUNC | os.O_CREAT | os.O_WRONLY);
+        self._exec(['./' + script + ".sh"], stdout=outputFd)
+        os.close(outputFd);
+        
+        pipe = os.popen('git diff '+ outputPath + ' 2>&1')
+        c = 0
+        for l in pipe:
+            print l.strip()
+            c += 1
+        self.assertEqual(c, 0, "There should be no difference between HEAD and the expected output %s! Either fix the code or commit changed expected output." % outputPath)
+
+    def test_parse_dependency(self):
+        self.runTestShellScriptAndAssertEqualOutput('test_parse_dependency')
+
 
     def _testRunBuild(self, arguments):
         args = ['../../../run_build_impl.sh'];
@@ -45,11 +64,17 @@ class TestCi(unittest.TestCase):
             env[testTools.CheckEnvVariable] = "self.checkDependency('../../src/dependencies/%s', '%s')" % (rep, sha1);
             self._testRunBuild(['--dependencies=%s' % dependencies,  '--packages=test_package', '-s', '-n'])
             if xunitPath:
-                print 'xunitPath', xunitPath
                 self._exec(['mv', Workspace + '/test_results/test_package/nosetests-TestPackage.py.xml', str(os.path.join(xunitPath, inspect.stack()[1][3] + '.xml'))]);
 
     def test_simpleBranchName(self):
         self._test_dependencies(['test_dependencies/0']);
+
+    def test_simpleSHA1(self):
+        self._test_dependencies(['0295dad96441fd2b9227caa5dbd2edfc5d438718', '0295dad96441']);
+        
+    def test_simpleGitDescribeLikeRevision(self):
+        self._test_dependencies(['notExistingTagOrBranch-32-g0295dad964']);
+
 
 if __name__ == '__main__':
     unittest.main()
