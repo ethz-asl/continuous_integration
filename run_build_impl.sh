@@ -83,10 +83,8 @@ if [ -z "$PACKAGES" ]; then
 fi
 
 # If the build job specifies a rosinstall file, we overwrite the build-job config dep list.
-if [ -z "$rosinstall_file" ]; then
-  echo "No rosinstall file specified, using dependency list from build-job config."
-else
-  echo "Rosinstall file: $rosinstall_file specified, overwriting specified dependencies."
+if [ -n "$rosinstall_file" ]; then
+  echo "Variable '$rosinstall_file' specified, overwriting specified dependencies."
   DEPENDENCIES=$rosinstall_file
 fi
 
@@ -158,8 +156,22 @@ then
   then
     wstool init || true
   fi
-  # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
-  grep -iv $repo_url_self ${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${DEPENDENCIES} > dependencies.rosinstall
+  truncate -s 0 dependencies.rosinstall
+  for dep in $DEPENDENCIES; do
+    # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
+    if [[ $dep == ./* ]]; then # DEPENDENCIES starting with ./ are considered local (within the repository) rosinstall files
+      depPath="${WORKSPACE}/src/${dep}"
+    else
+      depPath="${WORKSPACE}/${DEPS}/aslam_install/rosinstall/${dep}"
+    fi
+    echo "Collecting dependencies from $depPath."
+    if [ -n "$repo_url_self" ] ;then
+      grep -iv $repo_url_self "$depPath" >> dependencies.rosinstall
+    else
+      cat "$depPath" >> dependencies.rosinstall
+    fi
+  done
+  
   echo "Rosinstall to use:"
   cat dependencies.rosinstall
   wstool merge -t . dependencies.rosinstall

@@ -57,9 +57,11 @@ class TestCi(unittest.TestCase):
         import workspace.src.test_package.testTools as testTools
         for revision in revisions :
             rep = 'continuous_integration';
-            dependencies = 'git@github.com:ethz-asl/%s.git;%s' % (rep, revision);
-            
-            sha1 = testTools.rev_parse('.', ('' if re.match('^[0-9a-f]+$',revision)  else 'origin/') + revision);
+            if type(revision) in (tuple, list) :
+                dependencies, sha1 = revision
+            else:
+                dependencies = 'git@github.com:ethz-asl/%s.git;%s' % (rep, revision);
+                sha1 = testTools.rev_parse('.', ('' if re.match('^[0-9a-f]+$',revision)  else 'origin/') + revision);
             
             env[testTools.CheckEnvVariable] = "self.checkDependency('../../src/dependencies/%s', '%s')" % (rep, sha1);
             self._testRunBuild(['--dependencies=%s' % dependencies,  '--packages=test_package', '-s', '-n'])
@@ -75,6 +77,8 @@ class TestCi(unittest.TestCase):
     def test_simpleGitDescribeLikeRevision(self):
         self._test_dependencies(['notExistingTagOrBranch-32-g0295dad964']);
 
+    def test_localRosInstallFile(self):
+        self._test_dependencies([['./test_package/local.rosinstall', '0295dad96441fd2b9227caa5dbd2edfc5d438718']]);
 
 if __name__ == '__main__':
     unittest.main()
