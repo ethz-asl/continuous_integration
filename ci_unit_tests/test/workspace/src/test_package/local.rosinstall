@@ -1,0 +1,1 @@
+- git: {local-name: continuous_integration, uri: 'git@github.com:ethz-asl/continuous_integration.git', version: 'test_dependencies/0'}
