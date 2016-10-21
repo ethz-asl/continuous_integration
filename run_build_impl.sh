@@ -62,7 +62,7 @@ echo "-----------------------------"
 # If no packages are defined, we select all packages that are non-dependencies.
 # Get all package xmls in the tree, which are non dependencies.
 if [ -z "$PACKAGES" ]; then
-  all_package_xmls="$(find . -name package.xml | grep -v $DEPS | grep -v ^./devel/)"
+  all_package_xmls="$(find ./src -name package.xml | grep -v $DEPS)"
   echo "Auto discovering packages to build."
 
   for package_xml in ${all_package_xmls}
