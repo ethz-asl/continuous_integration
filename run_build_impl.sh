@@ -12,7 +12,11 @@ RUN_TESTS=true
 RUN_CPPCHECK=true
 CHECKOUT_CATKIN_SIMPLE=true
 
+# DEPS must be below src/ !
 DEPS=src/dependencies
+
+WSTOOL_MERGE_REPLACE="wstool merge --confirm-all --merge-replace -t $WORKSPACE/$DEPS"
+WSTOOL_UPDATE_REPLACE="wstool update --delete-changed-uris -t $WORKSPACE/$DEPS -j8"
 
 # Download / update dependencies.
 for i in "$@"
@@ -125,7 +129,7 @@ echo "-----------------------------"
 # Dependencies: Install using rosinstall or list of repositories from the build-job config.
 
 if $CHECKOUT_CATKIN_SIMPLE; then
-  CATKIN_SIMPLE_URL=git@github.com:catkin/catkin_simple.git
+  CATKIN_SIMPLE_URL=https://github.com/catkin/catkin_simple.git
 else
   CATKIN_SIMPLE_URL=""
 fi
@@ -136,26 +140,27 @@ then
   source /opt/ros/indigo/setup.sh
   cd $WORKSPACE/src
   catkin_init_workspace || true
-  if [ ! -f .rosinstall ]
-  then
-    wstool init || true
-  fi
 
-  # Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
   mkdir -p $WORKSPACE/$DEPS
   cd $WORKSPACE/$DEPS
-  echo "- git: {local-name: $WORKSPACE/$DEPS/aslam_install, uri: 'git@github.com:ethz-asl/aslam_install.git'}" | wstool  merge -t $WORKSPACE/src -
 
-  if $CHECKOUT_CATKIN_SIMPLE; then
-    echo "- git: {local-name: $WORKSPACE/$DEPS/catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | wstool  merge -t $WORKSPACE/src -
-  fi
-  wstool update -t $WORKSPACE/src -j8
-
+  # Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
   echo "Dependencies specified by rosinstall file.";
   if [ ! -f .rosinstall ]
   then
     wstool init || true
   fi
+
+  # We need aslam_install for its rosinstall/ folder ...
+  echo "- git: {local-name: aslam_install, uri: 'git@github.com:ethz-asl/aslam_install.git'}" | $WSTOOL_MERGE_REPLACE -
+  # therefore we must update fore once already.
+  $WSTOOL_UPDATE_REPLACE
+
+  # Make sure catkin_simple is onboard unless ! CHECKOUT_CATKIN_SIMPLE :
+  if $CHECKOUT_CATKIN_SIMPLE; then
+    echo "- git: {local-name: catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | $WSTOOL_MERGE_REPLACE -
+  fi
+
   truncate -s 0 dependencies.rosinstall
   for dep in $DEPENDENCIES; do
     # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
@@ -174,8 +179,8 @@ then
   
   echo "Rosinstall to use:"
   cat dependencies.rosinstall
-  wstool merge -t . dependencies.rosinstall
-  wstool update -t . -j8
+  $WSTOOL_MERGE_REPLACE dependencies.rosinstall
+  $WSTOOL_UPDATE_REPLACE
 else
   DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
 
