@@ -5,6 +5,8 @@ export PATH=/usr/texbin/:/usr/lib/ccache:/usr/local/bin/:/usr/local/opt/ccache/l
 RUN_TESTS=$1
 PACKAGES=${*:2}
 
+MAKE_ARGS=-j5 "VERBOSE=1"
+
 mkdir -p $WORKSPACE/devel/include
 
 echo Checking whether we should run the tests...
@@ -14,7 +16,7 @@ else
   echo "Will only build $PACKAGES and skip tests."
 fi
 
-catkin build -w $WORKSPACE --verbose --no-status $PACKAGES --make-args "VERBOSE=1" --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
+catkin build -w $WORKSPACE --verbose --no-status $PACKAGES --make-args $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
 ret_code=$?
 if [ $ret_code != 0 ]; then
   exit $ret_code
@@ -32,7 +34,7 @@ if $RUN_TESTS; then
   do
     echo "*** $PACKAGE -- Attempting to run unit tests."
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
-    OUTPUT=$(cd $WORKSPACE/build/$PACKAGE && make tests -j8 && make run_tests -j1 VERBOSE=1|tee >(cat - >&2))
+    OUTPUT=$(cd $WORKSPACE/build/$PACKAGE && make tests $MAKE_ARGS && make run_tests -j1 VERBOSE=1|tee >(cat - >&2))
     ret_code=$?
 
     # Try to figure out if things failed because there are no unit tests
