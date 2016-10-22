@@ -66,8 +66,9 @@ echo "-----------------------------"
 # If no packages are defined, we select all packages that are non-dependencies.
 # Get all package xmls in the tree, which are non dependencies.
 if [ -z "$PACKAGES" ]; then
-  all_package_xmls="$(find ./src -name package.xml | grep -v $DEPS)"
   echo "Auto discovering packages to build."
+  all_package_xmls="$(find ./src -name package.xml | grep -v $DEPS)"
+  catkin list | cut -f2 -d\  > ./all_catkin_packages_in_src.list
 
   for package_xml in ${all_package_xmls}
   do
@@ -78,6 +79,8 @@ if [ -z "$PACKAGES" ]; then
       echo "Skipping package $package since the package contains CATKIN_IGNORE."
     elif [ -f "${pkg_path}/CI_IGNORE" ]; then
       echo "Skipping package $package since the package contains CI_IGNORE."
+    elif ! echo $package | grep -qxFf ./all_catkin_packages_in_src.list; then
+      echo "Skipping package $package because 'catkin list' did not find it!"
     else
       PACKAGES="${PACKAGES} $package"
       echo "Added package $package."
