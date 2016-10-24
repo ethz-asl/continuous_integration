@@ -16,6 +16,10 @@ else
   echo "Will only build $PACKAGES and skip tests."
 fi
 
+if $MERGE_DEVEL; then
+  catkin config --merge-devel # Necessary for catkin_tools >= 0.4.
+fi
+
 catkin build -w $WORKSPACE --verbose --no-status $PACKAGES --make-args $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
 ret_code=$?
 if [ $ret_code != 0 ]; then

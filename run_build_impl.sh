@@ -10,6 +10,7 @@ DEPENDENCIES=""
 COMPILER="gcc"
 RUN_TESTS=true
 RUN_CPPCHECK=true
+MERGE_DEVEL=true
 CHECKOUT_CATKIN_SIMPLE=true
 
 # DEPS must be below src/ !
@@ -34,6 +35,9 @@ case $i in
   -t|--no_tests)
   RUN_TESTS=false
   ;;
+  -M|--no_merge_devel)
+  MERGE_DEVEL=false
+  ;;
   -n|--no_cppcheck)
   RUN_CPPCHECK=false
   ;;
@@ -45,6 +49,7 @@ case $i in
     echo "  [{-p|--packages}=packages]"
     echo "  [{--compiler}=gcc/clang]"
     echo "  [{-t|--no_tests} skip gtest execution]"
+    echo "  [{-M|--no_merge_devel} don't activate catkin merge-devel mode]"
     echo "  [{-c|--no_cppcheck} skip cppcheck execution]"
     echo "  [{-s|--no_catkinsimple} skip checking out catkin simple]"
   ;;
