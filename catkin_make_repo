@@ -5,7 +5,7 @@ export PATH=/usr/texbin/:/usr/lib/ccache:/usr/local/bin/:/usr/local/opt/ccache/l
 RUN_TESTS=$1
 PACKAGES=${*:2}
 
-MAKE_ARGS=-j5 "VERBOSE=1"
+MAKE_ARGS="-j5 VERBOSE=1"
 
 mkdir -p $WORKSPACE/devel/include
 
