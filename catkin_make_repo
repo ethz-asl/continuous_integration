@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash -e
+
 source /opt/ros/indigo/setup.sh
 export PATH=/usr/texbin/:/usr/lib/ccache:/usr/local/bin/:/usr/local/opt/ccache/libexec/:$PATH
 
@@ -37,14 +38,16 @@ if $RUN_TESTS; then
   for PACKAGE in $PACKAGES
   do
     echo "*** $PACKAGE -- Attempting to run unit tests."
+    
+    set +e
     # catch the output of catkin make and redirect stderr to stdout (2>&1)
     OUTPUT=$(cd $WORKSPACE/build/$PACKAGE && make tests $MAKE_ARGS && make run_tests -j1 VERBOSE=1|tee >(cat - >&2))
     ret_code=$?
+    set -e
 
     # Try to figure out if things failed because there are no unit tests
     # for this package. Search for the error message Make puts out:
-    NO_TESTS=$(echo $OUTPUT | grep "No rule to make target")
-    if [[ -z $NO_TESTS ]]; then
+    if ! echo $OUTPUT | grep -s "No rule to make target"; then
         # There were tests
         # Echo the output for parsing by Jenkins. Placing this line
         # inside the if statement supresses output if there were
@@ -70,7 +73,7 @@ if $RUN_TESTS; then
 
   # Copy all test results from the currently build packages to the workspace folder.
   echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
-  cp -r $TEST_RESULTS_FOLDER/* $TEST_RESULTS_DEST/ || true
+  cp -vr $TEST_RESULTS_FOLDER/* $TEST_RESULTS_DEST/ || true
 fi
 
 exit 0
