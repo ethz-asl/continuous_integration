@@ -59,7 +59,7 @@ if $RUN_TESTS; then
         else
             echo "*** $PACKAGE -- Unit tests succeeded"
             echo "*** $PACKAGE -- Copy unit test results to common folder."
-            cp -r $WORKSPACE/build/$PACKAGE/test_results/$PACKAGE $TEST_RESULTS_FOLDER/
+            cp -r $WORKSPACE/build/$PACKAGE/test_results/$PACKAGE $TEST_RESULTS_FOLDER/ || true
         fi
     else
         echo "*** $PACKAGE -- No unit tests found"
