@@ -59,6 +59,7 @@ class TestCi(unittest.TestCase):
         args = [TestDir + '/../../run_build_impl.sh'];
         args.extend(arguments)
         env['WORKSPACE'] = RedirectedWorkspace # this is necessary because catkin does not support nested workspaces!
+        env['CATKIN_ARGS'] = '--no-jobserver'
         self._exec(args, cwd = RedirectedWorkspace, env = env);
 
     def _test_dependencies(self, revisions):
