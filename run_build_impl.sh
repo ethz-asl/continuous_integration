@@ -12,6 +12,7 @@ RUN_TESTS=true
 RUN_CPPCHECK=true
 MERGE_DEVEL=true
 CHECKOUT_CATKIN_SIMPLE=true
+PREPARE_SCRIPT=""
 
 # DEPS must be below src/ !
 DEPS=src/dependencies
@@ -44,7 +45,11 @@ case $i in
   -s|--no_catkinsimple)
   CHECKOUT_CATKIN_SIMPLE=false
   ;;
+  -x=*|--prepare-system-script=*)
+    PREPARE_SCRIPT="${i#*=}"
+  ;;
   *)
+    echo "Unknown option: $i!" >&2
     echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git]"
     echo "  [{-p|--packages}=packages]"
     echo "  [{--compiler}=gcc/clang]"
@@ -52,6 +57,8 @@ case $i in
     echo "  [{-M|--no_merge_devel} don't activate catkin merge-devel mode]"
     echo "  [{-c|--no_cppcheck} skip cppcheck execution]"
     echo "  [{-s|--no_catkinsimple} skip checking out catkin simple]"
+    echo "  [{-x|--prepare-system-script} run this script between cloning and building]"
+    exit -1
   ;;
 esac
 done
@@ -108,6 +115,7 @@ echo "Dependencies: ${DEPENDENCIES}"
 echo "Execute integration tests: ${RUN_TESTS}"
 echo "Run cppcheck: ${RUN_CPPCHECK}"
 echo "Checkout catkin simple: ${CHECKOUT_CATKIN_SIMPLE}"
+echo "Run prepare script: ${PREPARE_SCRIPT}"
 echo "-----------------------------"
 
 # If we are on a mac we only support Apple Clang for now.
@@ -212,6 +220,26 @@ else
 fi
 
 cd $WORKSPACE
+
+if [[ -n "$PREPARE_SCRIPT" ]]; then
+  echo
+  echo "--------------------------------------------------------------------------------"
+  # Prepare scripts must run exclusively per node because they might install packages.
+  LOCKFILE=/var/lock/jenkins-prepare-script.lock
+  echo "Acquiring prepare script lock $LOCKFILE";
+  (
+    if ! flock -w 300 -n 9; then
+     echo "Locking $LOCKFILE timed out!" >&2
+     exit -2
+    fi
+    echo "Running $PREPARE_SCRIPT in $WORKSPACE:";
+    bash -ex $PREPARE_SCRIPT
+    echo "Successfully run $PREPARE_SCRIPT.";
+    rm $LOCKFILE;
+  ) 9>$LOCKFILE
+  echo "--------------------------------------------------------------------------------"
+  echo
+fi
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
