@@ -179,6 +179,7 @@ then
 
   truncate -s 0 dependencies.rosinstall
   for dep in $DEPENDENCIES; do
+    export DEBIAN_FRONTEND=noninteractive
     # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
     if [[ $dep == ./* ]]; then # DEPENDENCIES starting with ./ are considered local (within the repository) rosinstall files
       depPath="${WORKSPACE}/src/${dep}"
