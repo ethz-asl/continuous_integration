@@ -20,7 +20,7 @@ NICENESS=$DEFAULT_NICENESS
 DEPS=src/dependencies
 
 WSTOOL_MERGE_REPLACE="wstool merge --confirm-all --merge-replace -t $WORKSPACE/$DEPS"
-WSTOOL_UPDATE_REPLACE="wstool update --delete-changed-uris -t $WORKSPACE/$DEPS -j8"
+WSTOOL_UPDATE_REPLACE="wstool update -m 10 --delete-changed-uris -t $WORKSPACE/$DEPS -j8"
 
 # Download / update dependencies.
 for i in "$@"
@@ -183,10 +183,8 @@ then
 
   # Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
   echo "Dependencies specified by rosinstall file.";
-  if [ ! -f .rosinstall ]
-  then
-    wstool init || true
-  fi
+  rm -f .rosinstall || true # start fresh workspace so reduce double updates
+  wstool init || true
 
   # We need aslam_install for its rosinstall/ folder ...
   echo "- git: {local-name: aslam_install, uri: 'git@github.com:ethz-asl/aslam_install.git'}" | $WSTOOL_MERGE_REPLACE -
