@@ -21,9 +21,19 @@ for arg in sys.argv :
         xunitPath=os.path.dirname(arg.split('=',2)[1]);
 
 class TestCi(unittest.TestCase):
-    def _exec(self, args, stdout = None, env = None, cwd = None):
+    def __init__(self, name):
+        unittest.TestCase.__init__(self, name)
+        # this is necessary because catkin does not support nested workspaces!
+        print "Cloning the test workspace into %s" % RedirectedWorkspace
+        self._exec(['rm', '-f', RedirectedWorkspace], ignoreResult = True) # remove the old symbolic link, if still there
+        self._exec(['mkdir', '-vp', RedirectedWorkspace])
+        self._exec(['cp', '-av', Workspace + "/src", RedirectedWorkspace])
+
+    def _exec(self, args, stdout = None, env = None, cwd = None, ignoreResult = False):
+        print "Executing " + str(args)
         retCode = subprocess.call(args, stdout=stdout, env = env, cwd=cwd)
-        self.assertEqual(retCode, 0, "The return code of %s should be zero!" % str(args))
+        if not ignoreResult:
+            self.assertEqual(retCode, 0, "The return code of %s should be zero!" % str(args))
         
     def runTestShellScriptAndAssertEqualOutput(self, script):
         outDir = 'expected/'
@@ -46,10 +56,8 @@ class TestCi(unittest.TestCase):
 
 
     def _testRunBuild(self, arguments):
-        args = ['../../../run_build_impl.sh'];
+        args = [TestDir + '/../../run_build_impl.sh'];
         args.extend(arguments)
-        self._exec(['mkdir', '-p', os.path.dirname(RedirectedWorkspace)]);
-        self._exec(['ln', '-snf', Workspace, RedirectedWorkspace]);
         env['WORKSPACE'] = RedirectedWorkspace # this is necessary because catkin does not support nested workspaces!
         self._exec(args, cwd = RedirectedWorkspace, env = env);
 
@@ -66,7 +74,7 @@ class TestCi(unittest.TestCase):
             env[testTools.CheckEnvVariable] = "self.checkDependency('../../src/dependencies/%s', '%s')" % (rep, sha1);
             self._testRunBuild(['--dependencies=%s' % dependencies,  '--packages=test_package', '-s', '-n'])
             if xunitPath:
-                self._exec(['mv', Workspace + '/test_results/test_package/nosetests-TestPackage.py.xml', str(os.path.join(xunitPath, inspect.stack()[1][3] + '.xml'))]);
+                self._exec(['mv', RedirectedWorkspace + '/test_results/test_package/nosetests-TestPackage.py.xml', str(os.path.join(xunitPath, inspect.stack()[1][3] + '.xml'))]);
 
     def test_simpleBranchName(self):
         self._test_dependencies(['test_dependencies/0']);
