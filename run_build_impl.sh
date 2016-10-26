@@ -191,12 +191,12 @@ then
   # therefore we must update fore once already.
   $WSTOOL_UPDATE_REPLACE
 
+  truncate -s 0 dependencies.rosinstall
   # Make sure catkin_simple is onboard unless ! CHECKOUT_CATKIN_SIMPLE :
   if $CHECKOUT_CATKIN_SIMPLE; then
-    echo "- git: {local-name: catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | $WSTOOL_MERGE_REPLACE -
+    echo "- git: {local-name: catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" >> dependencies.rosinstall
   fi
 
-  truncate -s 0 dependencies.rosinstall
   for dep in $DEPENDENCIES; do
     # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
     if [[ $dep == ./* ]]; then # DEPENDENCIES starting with ./ are considered local (within the repository) rosinstall files
@@ -214,7 +214,7 @@ then
   
   echo "Rosinstall to use:"
   cat dependencies.rosinstall
-  $WSTOOL_MERGE_REPLACE dependencies.rosinstall
+  cp dependencies.rosinstall .rosinstall
   $WSTOOL_UPDATE_REPLACE
 else
   DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
