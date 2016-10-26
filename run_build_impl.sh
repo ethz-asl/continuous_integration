@@ -170,17 +170,22 @@ if $CHECKOUT_CATKIN_SIMPLE; then
 else
   CATKIN_SIMPLE_URL=""
 fi
-mkdir -p $WORKSPACE/$DEPS && cd $WORKSPACE/$DEPS
+
+echo "Initialize workspace:"
+echo "-----------------------------"
+source /opt/ros/indigo/setup.sh
+cd $WORKSPACE/
+mkdir -vp $WORKSPACE/src
+catkin init
+echo "-----------------------------"
+
+echo "Pull dependencies:"
+echo "-----------------------------"
+mkdir -vp $WORKSPACE/$DEPS
+cd $WORKSPACE/$DEPS
 
 if [[ $DEPENDENCIES == *.rosinstall ]]
 then
-  source /opt/ros/indigo/setup.sh
-  cd $WORKSPACE/src
-  catkin_init_workspace || true
-
-  mkdir -p $WORKSPACE/$DEPS
-  cd $WORKSPACE/$DEPS
-
   # Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
   echo "Dependencies specified by rosinstall file.";
   rm -f .rosinstall || true # start fresh workspace so reduce double updates
@@ -237,10 +242,14 @@ else
     fi
   done
 fi
+echo "-----------------------------"
 
-cd $WORKSPACE
 
 if [[ -n "$PREPARE_SCRIPT" ]]; then
+  echo "Run prepare script:"
+  echo "-----------------------------"
+  cd $WORKSPACE
+
   function runPrepareScript() {
     export DEBIAN_FRONTEND=noninteractive
     echo "Running $PREPARE_SCRIPT in $WORKSPACE:";
@@ -248,8 +257,6 @@ if [[ -n "$PREPARE_SCRIPT" ]]; then
     echo "Successfully run $PREPARE_SCRIPT.";
   }
 
-  echo
-  echo "--------------------------------------------------------------------------------"
   # Prepare scripts should run exclusively per node because they might install packages.
   if [ -d /var/lock ] && command -v flock >/dev/null 2>&1; then
     LOCKFILE=/var/lock/jenkins-prepare-script.lock
@@ -266,9 +273,13 @@ if [[ -n "$PREPARE_SCRIPT" ]]; then
     echo "WARNING going to run prepare script on a crippled UNIX ($unamestr) : no /var/lock or flock available and therefore no exclusive run!" >&2
     runPrepareScript
   fi
-  echo "--------------------------------------------------------------------------------"
-  echo
+  echo "-----------------------------"
 fi
+
+
+echo "Build workspace:"
+echo "-----------------------------"
+cd $WORKSPACE
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
@@ -288,4 +299,4 @@ else
   exit 1
 fi
 
-
+echo "-----------------------------"
