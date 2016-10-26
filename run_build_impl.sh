@@ -179,7 +179,6 @@ then
 
   truncate -s 0 dependencies.rosinstall
   for dep in $DEPENDENCIES; do
-    export DEBIAN_FRONTEND=noninteractive
     # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
     if [[ $dep == ./* ]]; then # DEPENDENCIES starting with ./ are considered local (within the repository) rosinstall files
       depPath="${WORKSPACE}/src/${dep}"
@@ -229,6 +228,7 @@ if [[ -n "$PREPARE_SCRIPT" ]]; then
   LOCKFILE=/var/lock/jenkins-prepare-script.lock
   echo "Acquiring prepare script lock $LOCKFILE";
   (
+    export DEBIAN_FRONTEND=noninteractive
     if ! flock -w 300 -n 9; then
      echo "Locking $LOCKFILE timed out!" >&2
      exit -2
