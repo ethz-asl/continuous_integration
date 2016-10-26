@@ -13,6 +13,8 @@ RUN_CPPCHECK=true
 MERGE_DEVEL=true
 CHECKOUT_CATKIN_SIMPLE=true
 PREPARE_SCRIPT=""
+DEFAULT_NICENESS=5
+NICENESS=$DEFAULT_NICENESS
 
 # DEPS must be below src/ !
 DEPS=src/dependencies
@@ -48,7 +50,10 @@ case $i in
   -x=*|--prepare-system-script=*)
     PREPARE_SCRIPT="${i#*=}"
   ;;
-  *)
+  --niceness=*)
+    NICENESS="${i#*=}"
+  ;;
+    *)
     echo "Unknown option: $i!" >&2
     echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git]"
     echo "  [{-p|--packages}=packages]"
@@ -58,6 +63,7 @@ case $i in
     echo "  [{-c|--no_cppcheck} skip cppcheck execution]"
     echo "  [{-s|--no_catkinsimple} skip checking out catkin simple]"
     echo "  [{-x|--prepare-system-script} run this script between cloning and building]"
+    echo "  [{--niceness} niceness for the job (default $DEFAULT_NICENESS)]"
     exit -1
   ;;
 esac
@@ -139,6 +145,21 @@ then
   clang -v
   export CC=clang
   export CXX=clang++
+fi
+echo "-----------------------------"
+
+
+echo "Process setup:"
+echo "-----------------------------"
+
+echo "Setting niceness to $NICENESS."
+renice -n $NICENESS -p $$
+
+if (( $NICENESS >= 10 )) ; then
+  if [[ $(uname) == 'Linux' ]] ; then
+    echo "Setting scheduling class to 'idle' because $NICENESS is >= 10."
+    ionice -c 3 -p $$
+  fi
 fi
 echo "-----------------------------"
 
