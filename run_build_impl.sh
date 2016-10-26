@@ -241,22 +241,31 @@ fi
 cd $WORKSPACE
 
 if [[ -n "$PREPARE_SCRIPT" ]]; then
-  echo
-  echo "--------------------------------------------------------------------------------"
-  # Prepare scripts must run exclusively per node because they might install packages.
-  LOCKFILE=/var/lock/jenkins-prepare-script.lock
-  echo "Acquiring prepare script lock $LOCKFILE";
-  (
+  function runPrepareScript() {
     export DEBIAN_FRONTEND=noninteractive
-    if ! flock -w 300 -n 9; then
-     echo "Locking $LOCKFILE timed out!" >&2
-     exit -2
-    fi
     echo "Running $PREPARE_SCRIPT in $WORKSPACE:";
     bash -ex $PREPARE_SCRIPT
     echo "Successfully run $PREPARE_SCRIPT.";
-    rm $LOCKFILE;
-  ) 9>$LOCKFILE
+  }
+
+  echo
+  echo "--------------------------------------------------------------------------------"
+  # Prepare scripts should run exclusively per node because they might install packages.
+  if [ -d /var/lock ] && command -v flock >/dev/null 2>&1; then
+    LOCKFILE=/var/lock/jenkins-prepare-script.lock
+    echo "Acquiring prepare script lock $LOCKFILE";
+    (
+      if ! flock -w 300 -n 9; then
+        echo "Locking $LOCKFILE timed out!" >&2
+        exit -2
+      fi
+      runPrepareScript
+      rm $LOCKFILE;
+    ) 9>$LOCKFILE
+  else
+    echo "WARNING going to run prepare script on a crippled UNIX ($unamestr) : no /var/lock or flock available and therefore no exclusive run!" >&2
+    runPrepareScript
+  fi
   echo "--------------------------------------------------------------------------------"
   echo
 fi
