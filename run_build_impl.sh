@@ -191,12 +191,12 @@ then
   # therefore we must update fore once already.
   $WSTOOL_UPDATE_REPLACE
 
+  truncate -s 0 dependencies.rosinstall
   # Make sure catkin_simple is onboard unless ! CHECKOUT_CATKIN_SIMPLE :
   if $CHECKOUT_CATKIN_SIMPLE; then
-    echo "- git: {local-name: catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" | $WSTOOL_MERGE_REPLACE -
+    echo "- git: {local-name: catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" >> dependencies.rosinstall
   fi
 
-  truncate -s 0 dependencies.rosinstall
   for dep in $DEPENDENCIES; do
     # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
     if [[ $dep == ./* ]]; then # DEPENDENCIES starting with ./ are considered local (within the repository) rosinstall files
@@ -214,7 +214,7 @@ then
   
   echo "Rosinstall to use:"
   cat dependencies.rosinstall
-  $WSTOOL_MERGE_REPLACE dependencies.rosinstall
+  cp dependencies.rosinstall .rosinstall
   $WSTOOL_UPDATE_REPLACE
 else
   DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
@@ -241,22 +241,31 @@ fi
 cd $WORKSPACE
 
 if [[ -n "$PREPARE_SCRIPT" ]]; then
-  echo
-  echo "--------------------------------------------------------------------------------"
-  # Prepare scripts must run exclusively per node because they might install packages.
-  LOCKFILE=/var/lock/jenkins-prepare-script.lock
-  echo "Acquiring prepare script lock $LOCKFILE";
-  (
+  function runPrepareScript() {
     export DEBIAN_FRONTEND=noninteractive
-    if ! flock -w 300 -n 9; then
-     echo "Locking $LOCKFILE timed out!" >&2
-     exit -2
-    fi
     echo "Running $PREPARE_SCRIPT in $WORKSPACE:";
     bash -ex $PREPARE_SCRIPT
     echo "Successfully run $PREPARE_SCRIPT.";
-    rm $LOCKFILE;
-  ) 9>$LOCKFILE
+  }
+
+  echo
+  echo "--------------------------------------------------------------------------------"
+  # Prepare scripts should run exclusively per node because they might install packages.
+  if [ -d /var/lock ] && command -v flock >/dev/null 2>&1; then
+    LOCKFILE=/var/lock/jenkins-prepare-script.lock
+    echo "Acquiring prepare script lock $LOCKFILE";
+    (
+      if ! flock -w 300 -n 9; then
+        echo "Locking $LOCKFILE timed out!" >&2
+        exit -2
+      fi
+      runPrepareScript
+      rm $LOCKFILE;
+    ) 9>$LOCKFILE
+  else
+    echo "WARNING going to run prepare script on a crippled UNIX ($unamestr) : no /var/lock or flock available and therefore no exclusive run!" >&2
+    runPrepareScript
+  fi
   echo "--------------------------------------------------------------------------------"
   echo
 fi
