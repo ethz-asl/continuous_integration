@@ -6,4 +6,8 @@ if [[ "$DEBIAN_FRONTEND" != noninteractive ]] ;then
   exit -1
 fi
 
-sudo apt-get install git
+if [[ $(uname) == "Linux" ]]; then
+  sudo apt-get install git
+else
+  echo "Platform $(uname) is not supported! Go away!"
+fi
