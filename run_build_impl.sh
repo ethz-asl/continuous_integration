@@ -1,11 +1,10 @@
 #!/bin/bash -e
 export PATH=/usr/local/bin/:$PATH
 
-ROS_VERSION=$(source get_latest_ros_version.sh)
-source /opt/ros/$ROS_VERSION/setup.sh
-
 # Get the directory of this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROS_VERSION=$(source $DIR/get_latest_ros_version.sh)
+source /opt/ros/$ROS_VERSION/setup.sh
 
 PACKAGE="--all"
 DEPENDENCIES=""
