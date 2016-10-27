@@ -1,7 +1,9 @@
 #!/bin/bash -e
 export PATH=/usr/local/bin/:$PATH
 
-source /opt/ros/indigo/setup.sh
+ROS_VERSION=$(source get_latest_ros_version.sh)
+source /opt/ros/$ROS_VERSION/setup.sh
+
 # Get the directory of this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -173,7 +175,8 @@ fi
 
 echo "Initialize workspace:"
 echo "-----------------------------"
-source /opt/ros/indigo/setup.sh
+source /opt/ros/$ROS_VERSION/setup.sh
+
 cd $WORKSPACE/
 mkdir -vp $WORKSPACE/src
 catkin init
