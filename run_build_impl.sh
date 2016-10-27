@@ -292,7 +292,7 @@ cd $WORKSPACE
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
 
 function kill_roscore_on_exit {
-  if $START_ROSCORE && $ROS_PID -gt 0 ; then
+  if $START_ROSCORE && [[ "$ROS_PID" -gt 0 ]] ; then
     # Kill roscore.
     kill $ROS_PID
   fi
