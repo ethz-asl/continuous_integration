@@ -1,2 +1,2 @@
 #!/bin/bash -e
-ls /opt/ros/ | sort -V | tail -n 1
+ls /opt/ros/ | tail -n 1
