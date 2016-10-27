@@ -1,5 +1,8 @@
 #!/bin/bash
-source /opt/ros/indigo/setup.sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROS_VERSION=$(source $DIR/get_latest_ros_version.sh)
+source /opt/ros/$ROS_VERSION/setup.sh
+
 export PATH=/usr/lib/ccache:$PATH
 
 RUN_TESTS=$1
@@ -17,7 +20,8 @@ cd $WORKSPACE
 export ROS_WS=$WORKSPACE/ros_ws
 rm -rf $ROS_WS
 mkdir -p $ROS_WS
-rosws init $ROS_WS /opt/ros/indigo
+rosws init $ROS_WS /opt/ros/$ROS_VERSION
+
 for package in $(find ./* -type d)
 do
   if [ -a "$package/manifest.xml" ]
