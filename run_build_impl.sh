@@ -16,6 +16,7 @@ CHECKOUT_CATKIN_SIMPLE=true
 PREPARE_SCRIPT=""
 DEFAULT_NICENESS=5
 NICENESS=$DEFAULT_NICENESS
+START_ROSCORE=false
 
 # DEPS must be below src/ !
 DEPS=src/dependencies
@@ -54,6 +55,9 @@ case $i in
   --niceness=*)
     NICENESS="${i#*=}"
   ;;
+  -r|--roscore)
+    START_ROSCORE=true
+  ;;
     *)
     echo "Unknown option: $i!" >&2
     echo "Usage: run_build [{-d|--dependencies}=dependency_github_url.git]"
@@ -65,6 +69,7 @@ case $i in
     echo "  [{-s|--no_catkinsimple} skip checking out catkin simple]"
     echo "  [{-x|--prepare-system-script} run this script between cloning and building]"
     echo "  [{--niceness} niceness for the job (default $DEFAULT_NICENESS)]"
+    echo "  [{-r|--roscore} start a roscore for this job]"
     exit -1
   ;;
 esac
@@ -285,6 +290,41 @@ cd $WORKSPACE
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
+
+function kill_roscore_on_exit {
+  if $START_ROSCORE && $ROS_PID -gt 0 ; then
+    # Kill roscore.
+    kill $ROS_PID
+  fi
+}
+
+if $START_ROSCORE ; then
+  ROS_PORT=-1
+  ROS_HOME=$HOME/.ros
+
+  # Check for a free port.
+  echo "Looking for an unused port for the roscore."
+  for i in `seq 12000 13000`
+  do
+    # Check if port is unused.
+    if ! (lsof -i :$i > /dev/null ) ; then
+      export ROS_PORT=$i
+      break
+    fi
+  done
+
+  if [ $ROS_PORT -lt 0 ] ; then
+    echo "Couldn't find an unused port for the roscore." >&2
+    exit 1
+  fi
+
+  # Start roscore.
+  export ROS_MASTER_URI="http://localhost:$ROS_PORT"
+  echo "Starting roscore on port $ROS_PORT."
+  roscore -p $PORT > /dev/null & 
+  ROS_PID=$!
+  trap kill_roscore_on_exit EXIT
+fi
 
 #Now run the build.
 if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
