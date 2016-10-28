@@ -128,6 +128,7 @@ echo "Execute integration tests: ${RUN_TESTS}"
 echo "Run cppcheck: ${RUN_CPPCHECK}"
 echo "Checkout catkin simple: ${CHECKOUT_CATKIN_SIMPLE}"
 echo "Run prepare script: ${PREPARE_SCRIPT}"
+echo "CATKIN_ARGS: ${CATKIN_ARGS}"
 echo "-----------------------------"
 
 # If we are on a mac we only support Apple Clang for now.

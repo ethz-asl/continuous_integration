@@ -10,6 +10,10 @@ PACKAGES=${*:2}
 
 MAKE_ARGS="-j5 VERBOSE=1"
 
+if [ -n "$TERM" ] ; then
+  export TERM=xterm
+fi
+
 mkdir -p $WORKSPACE/devel/include
 
 echo Checking whether we should run the tests...
@@ -23,7 +27,8 @@ if $MERGE_DEVEL; then
   catkin config --merge-devel # Necessary for catkin_tools >= 0.4.
 fi
 
-catkin build -w $WORKSPACE --verbose --no-status $PACKAGES --make-args $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
+echo "*** building packages"
+catkin build -w $WORKSPACE --verbose --no-status $CATKIN_ARGS $PACKAGES --make-args $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
 ret_code=$?
 if [ $ret_code != 0 ]; then
   exit $ret_code
@@ -37,34 +42,21 @@ if $RUN_TESTS; then
   rm -rf $TEST_RESULTS_FOLDER
   mkdir $TEST_RESULTS_FOLDER
 
+  echo "*** building tests"
+  catkin build -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES --make-args tests $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
+
+  echo "*** running tests"
+  catkin run_tests -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES -j1
+
+  # Collect the results files
   for PACKAGE in $PACKAGES
   do
-    echo "*** $PACKAGE -- Attempting to run unit tests."
-    
-    set +e
-    # catch the output of catkin make and redirect stderr to stdout (2>&1)
-    OUTPUT=$(cd $WORKSPACE/build/$PACKAGE && make tests $MAKE_ARGS && make run_tests -j1 VERBOSE=1|tee >(cat - >&2))
-    ret_code=$?
-    set -e
-
-    # Try to figure out if things failed because there are no unit tests
-    # for this package. Search for the error message Make puts out:
-    if ! echo $OUTPUT | grep -s "No rule to make target"; then
-        # There were tests
-        # Echo the output for parsing by Jenkins. Placing this line
-        # inside the if statement supresses output if there were
-        # no tests
-        echo "$OUTPUT"
-        if [ $ret_code != 0 ]; then
-            echo "*** $PACKAGE -- Unit tests failed"
-            exit $ret_code
-        else
-            echo "*** $PACKAGE -- Unit tests succeeded"
-            echo "*** $PACKAGE -- Copy unit test results to common folder."
-            cp -r $WORKSPACE/build/$PACKAGE/test_results/$PACKAGE $TEST_RESULTS_FOLDER/ || true
-        fi
+    PACKAGE_TEST_RESULTS_FOLDER=$WORKSPACE/build/$PACKAGE/test_results/$PACKAGE
+    if [ -d $PACKAGE_TEST_RESULTS_FOLDER ] ; then
+        echo "*** $PACKAGE -- Copy unit test results to common folder."
+        cp -r $PACKAGE_TEST_RESULTS_FOLDER $TEST_RESULTS_FOLDER/ || true
     else
-        echo "*** $PACKAGE -- No unit tests found"
+        echo "*** $PACKAGE -- No unit tests found!" >&2
     fi
   done
 
