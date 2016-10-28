@@ -303,7 +303,7 @@ if $START_ROSCORE ; then
   ROS_HOME=$HOME/.ros
 
   # Check if lsof is installed.
-  if ! (which lsof > /dev/null) ; then
+  if ! (command -v lsof > /dev/null) ; then
     echo "lsof not installed: can't scan for free port for the roscore." >&2
     exit 1
   fi

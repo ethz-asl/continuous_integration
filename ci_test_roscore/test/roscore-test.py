@@ -6,7 +6,6 @@ import socket
 import sys
 import unittest
 
-## A sample python unit test
 class TestRoscore(unittest.TestCase):
     def test_if_roscore_available(self):
         try:
