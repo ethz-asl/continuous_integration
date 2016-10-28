@@ -302,6 +302,12 @@ if $START_ROSCORE ; then
   ROS_PORT=-1
   ROS_HOME=$HOME/.ros
 
+  # Check if lsof is installed.
+  if ! (which lsof > /dev/null) ; then
+    echo "lsof not installed: can't scan for free port for the roscore." >&2
+    exit 1
+  fi
+
   # Check for a free port.
   echo "Looking for an unused port for the roscore."
   for i in `seq 12000 13000`
