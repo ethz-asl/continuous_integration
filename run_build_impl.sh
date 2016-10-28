@@ -321,7 +321,7 @@ if $START_ROSCORE ; then
   # Start roscore.
   export ROS_MASTER_URI="http://localhost:$ROS_PORT"
   echo "Starting roscore on port $ROS_PORT."
-  roscore -p $PORT > /dev/null & 
+  roscore -p $ROS_PORT > /dev/null & 
   ROS_PID=$!
   trap kill_roscore_on_exit EXIT
 fi
