@@ -304,8 +304,13 @@ if $START_ROSCORE ; then
 
   # Check if lsof is installed.
   if ! (command -v lsof > /dev/null) ; then
-    echo "lsof not installed: can't scan for free port for the roscore." >&2
-    exit 1
+    if [[ $(uname) == 'Linux' ]] ; then
+      export DEBIAN_FRONTEND=noninteractive
+      sudo apt-get install -y lsof
+    else
+      echo "lsof not installed: can't scan for free port for the roscore." >&2
+      exit 1
+    fi
   fi
 
   # Check for a free port.
