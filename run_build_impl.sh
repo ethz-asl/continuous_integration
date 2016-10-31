@@ -22,7 +22,11 @@ START_ROSCORE=false
 DEPS=src/dependencies
 
 WSTOOL_MERGE_REPLACE="wstool merge --confirm-all --merge-replace -t $WORKSPACE/$DEPS"
-WSTOOL_UPDATE_REPLACE="wstool update --delete-changed-uris -t $WORKSPACE/$DEPS -j1"
+function wstoolUpdateReplace () {
+  wstool status -t  $WORKSPACE/$DEPS
+  wstool update --delete-changed-uris -t $WORKSPACE/$DEPS -j1
+}
+WSTOOL_UPDATE_REPLACE="wstoolUpdateReplace"
 
 # Download / update dependencies.
 for i in "$@"
