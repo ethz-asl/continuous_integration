@@ -75,6 +75,10 @@ case $i in
 esac
 done
 
+# run sanity checks:
+source $DIR/modules/sanity_checks.sh
+
+# Find workspace
 cd $WORKSPACE
 echo "-----------------------------"
 # Locate the main folder everything is checked out into.
