@@ -7,7 +7,7 @@ if [[ "$DEBIAN_FRONTEND" != noninteractive ]] ;then
 fi
 
 if [[ $(uname) == "Linux" ]]; then
-  sudo apt-get install git
+  sudo apt-get install -y git imagemagick
 else
   echo "Platform $(uname) is not supported! Go away!"
 fi
