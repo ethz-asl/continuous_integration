@@ -9,6 +9,13 @@ RUN_TESTS=$1
 PACKAGES=${*:2}
 
 MAKE_ARGS="-j5 VERBOSE=1"
+CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT"
+
+if [ -e ~/local.catkin_make_repo.settings.sh ]; then
+  echo "Reading settings from local.catkin_make_repo.settings.sh:" 
+  cat ~/local.catkin_make_repo.settings.sh
+  source ~/local.catkin_make_repo.settings.sh
+fi
 
 if [ -n "$TERM" ] ; then
   export TERM=xterm
@@ -28,7 +35,7 @@ if $MERGE_DEVEL; then
 fi
 
 echo "*** building packages"
-catkin build -w $WORKSPACE --verbose --no-status $CATKIN_ARGS $PACKAGES --make-args $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
+catkin build -w $WORKSPACE --verbose --no-status $CATKIN_ARGS $PACKAGES --make-args $MAKE_ARGS --cmake-args $CMAKE_ARGS
 ret_code=$?
 if [ $ret_code != 0 ]; then
   exit $ret_code
