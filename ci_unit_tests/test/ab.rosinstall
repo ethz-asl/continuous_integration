@@ -1,0 +1,2 @@
+- git: {local-name: a, uri: 'git@github.com:ethz-asl/a.git', version: 'test_dependencies/0'}
+- git: {local-name: b, uri: 'git@github.com:ethz-asl/b.git'}

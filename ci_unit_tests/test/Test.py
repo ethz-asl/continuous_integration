@@ -75,6 +75,9 @@ class TestCi(unittest.TestCase):
     def test_parse_dependency(self):
         self._runTestShellScriptAndAssertEqualOutput('test_parse_dependency')
 
+    def test_rosinstall_diff(self):
+        self._runTestShellScriptAndAssertEqualOutput('test_rosinstall-diff')
+
     def test_simpleBranchName(self):
         self._test_dependencies(['test_dependencies/0']);
 
