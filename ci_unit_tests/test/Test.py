@@ -34,7 +34,7 @@ class TestCi(unittest.TestCase):
         if not ignoreResult:
             self.assertEqual(retCode, 0, "The return code of %s should be zero!" % str(args))
         
-    def runTestShellScriptAndAssertEqualOutput(self, script):
+    def _runTestShellScriptAndAssertEqualOutput(self, script):
         outDir = 'expected/'
         
         outputPath = outDir + script + '.out';
@@ -49,10 +49,6 @@ class TestCi(unittest.TestCase):
             print l.strip()
             c += 1
         self.assertEqual(c, 0, "There should be no difference between HEAD and the expected output %s! Either fix the code or commit changed expected output." % outputPath)
-
-    def test_parse_dependency(self):
-        self.runTestShellScriptAndAssertEqualOutput('test_parse_dependency')
-
 
     def _testRunBuild(self, arguments):
         args = [TestDir + '/../../run_build_impl.sh'];
@@ -75,6 +71,9 @@ class TestCi(unittest.TestCase):
             self._testRunBuild(['--dependencies=%s' % dependencies,  '--packages=test_package', '-s', '-n'])
             if xunitPath:
                 self._exec(['mv', RedirectedWorkspace + '/test_results/test_package/nosetests-TestPackage.py.xml', str(os.path.join(xunitPath, inspect.stack()[1][3] + '.xml'))]);
+
+    def test_parse_dependency(self):
+        self._runTestShellScriptAndAssertEqualOutput('test_parse_dependency')
 
     def test_simpleBranchName(self):
         self._test_dependencies(['test_dependencies/0']);

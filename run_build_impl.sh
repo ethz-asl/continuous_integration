@@ -3,8 +3,10 @@ export PATH=/usr/local/bin/:$PATH
 
 # Get the directory of this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROS_VERSION=$(source $DIR/get_latest_ros_version.sh)
-source /opt/ros/$ROS_VERSION/setup.sh
+CI_MODULES=$DIR/modules
+
+# "Setup common functions and definitions and source current ROS"
+source $CI_MODULES/common_definitions.sh
 
 PACKAGE="--all"
 DEPENDENCIES=""
@@ -18,15 +20,6 @@ DEFAULT_NICENESS=5
 NICENESS=$DEFAULT_NICENESS
 START_ROSCORE=false
 
-# DEPS must be below src/ !
-DEPS=src/dependencies
-
-WSTOOL_MERGE_REPLACE="wstool merge --confirm-all --merge-replace -t $WORKSPACE/$DEPS"
-function wstoolUpdateReplace () {
-  wstool status -t  $WORKSPACE/$DEPS
-  wstool update --delete-changed-uris -t $WORKSPACE/$DEPS -j1
-}
-WSTOOL_UPDATE_REPLACE="wstoolUpdateReplace"
 
 # Download / update dependencies.
 for i in "$@"
@@ -80,7 +73,7 @@ esac
 done
 
 # run sanity checks:
-source $DIR/modules/sanity_checks.sh
+source $CI_MODULES/sanity_checks.sh
 
 # Find workspace
 cd $WORKSPACE
@@ -202,21 +195,8 @@ cd $WORKSPACE/$DEPS
 
 if [[ $DEPENDENCIES == *.rosinstall ]]
 then
-  # Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
-  echo "Dependencies specified by rosinstall file.";
-  rm -f .rosinstall || true # start fresh workspace so reduce double updates
-  wstool init || true
-
-  # We need aslam_install for its rosinstall/ folder ...
-  echo "- git: {local-name: aslam_install, uri: 'git@github.com:ethz-asl/aslam_install.git'}" | $WSTOOL_MERGE_REPLACE -
-  # therefore we must update fore once already.
-  $WSTOOL_UPDATE_REPLACE
-
-  truncate -s 0 dependencies.rosinstall
-  # Make sure catkin_simple is onboard unless ! CHECKOUT_CATKIN_SIMPLE :
-  if $CHECKOUT_CATKIN_SIMPLE; then
-    echo "- git: {local-name: catkin_simple, uri: '${CATKIN_SIMPLE_URL}'}" >> dependencies.rosinstall
-  fi
+  CHECKOUT_ASLAM_INSTALL=true
+  source $CI_MODULES/prepare_wstool_workspace.sh
 
   for dep in $DEPENDENCIES; do
     # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
@@ -244,7 +224,7 @@ else
   do
     cd $WORKSPACE/$DEPS
     
-    source $DIR/modules/parse_dependency.sh
+    source $CI_MODULES/parse_dependency.sh
 
     if [ -d $foldername ]; then
       echo "Package $foldername exists, running: git fetch $depth_args && git checkout ${revision} && git submodule update --recursive"
@@ -334,8 +314,7 @@ if $START_ROSCORE ; then
   done
 
   if [ $ROS_PORT -lt 0 ] ; then
-    echo "Couldn't find an unused port for the roscore." >&2
-    exit 1
+    fatal "Couldn't find an unused port for the roscore."
   fi
 
   # Start roscore.
