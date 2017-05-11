@@ -25,9 +25,8 @@ class TestCi(unittest.TestCase):
         unittest.TestCase.__init__(self, name)
         # this is necessary because catkin does not support nested workspaces!
         print "Cloning the test workspace into %s" % RedirectedWorkspace
-        self._exec(['rm', '-f', RedirectedWorkspace], ignoreResult = True) # remove the old symbolic link, if still there
-        self._exec(['mkdir', '-vp', RedirectedWorkspace])
-        self._exec(['cp', '-av', Workspace + "/src", RedirectedWorkspace])
+        self._exec(['mkdir', '-vp', RedirectedWorkspace + "/src/"])
+        self._exec(['rsync', '-a', Workspace + "/src/", RedirectedWorkspace + "/src/"])
 
     def _exec(self, args, stdout = None, env = None, cwd = None, ignoreResult = False):
         print "Executing " + str(args)
