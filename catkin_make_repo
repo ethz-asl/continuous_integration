@@ -1,7 +1,9 @@
 #!/bin/bash -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROS_VERSION=$(source $DIR/get_latest_ros_version.sh)
-source /opt/ros/$ROS_VERSION/setup.sh
+CI_MODULES=$DIR/modules
+
+# "Setup common functions and definitions and source current ROS"
+source $CI_MODULES/common_definitions.sh
 
 export PATH=/usr/texbin/:/usr/lib/ccache:/usr/local/bin/:/usr/local/opt/ccache/libexec/:$PATH
 
