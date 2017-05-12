@@ -26,13 +26,15 @@ class TestCi(unittest.TestCase):
         # this is necessary because catkin does not support nested workspaces!
         print "Cloning the test workspace into %s" % RedirectedWorkspace
         self._exec(['mkdir', '-vp', RedirectedWorkspace + "/src/"])
-        self._exec(['rsync', '-a', Workspace + "/src/", RedirectedWorkspace + "/src/"])
+        self._exec(['make', '-C', 'workspace', 'extract_test_repos'])
+        self._exec(['rsync', '-a', '--delete', '--exclude', 'dependencies/', Workspace + "/", RedirectedWorkspace + "/"])
 
     def _exec(self, args, stdout = None, env = None, cwd = None, ignoreResult = False):
-        print "Executing " + str(args)
+        cmd = " ".join(args)
+        print "Executing " + cmd
         retCode = subprocess.call(args, stdout=stdout, env = env, cwd=cwd)
         if not ignoreResult:
-            self.assertEqual(retCode, 0, "The return code of %s should be zero!" % str(args))
+            self.assertEqual(retCode, 0, "The return code of '%s' should be zero, but was %d!" % (cmd, retCode))
         
     def _runTestShellScriptAndAssertEqualOutput(self, script):
         outDir = 'expected/'
@@ -57,20 +59,28 @@ class TestCi(unittest.TestCase):
         env['CATKIN_ARGS'] = '--no-jobserver'
         self._exec(args, cwd = RedirectedWorkspace, env = env);
 
-    def _test_dependencies(self, revisions):
+    def _test_dependencies(self, revision, checks = None):
         import workspace.src.test_package.testTools as testTools
-        for revision in revisions :
-            rep = 'continuous_integration';
-            if type(revision) in (tuple, list) :
-                dependencies, sha1 = revision
-            else:
-                dependencies = 'git@github.com:ethz-asl/%s.git;%s' % (rep, revision);
-                sha1 = testTools.rev_parse('.', ('' if re.match('^[0-9a-f]+$',revision)  else 'origin/') + revision);
-            
-            env[testTools.CheckEnvVariable] = "self.checkDependency('../../src/dependencies/%s', '%s')" % (rep, sha1);
-            self._testRunBuild(['--dependencies=%s' % dependencies,  '--packages=test_package', '-s', '-n'])
-            if xunitPath:
-                self._exec(['mv', RedirectedWorkspace + '/test_results/test_package/nosetests-TestPackage.py.xml', str(os.path.join(xunitPath, inspect.stack()[1][3] + '.xml'))]);
+        if checks is None:
+          rep = 'continuous_integration';
+          if type(revision) in (tuple, list) :
+              dependencies, sha1 = revision
+          else:
+              dependencies = 'git@github.com:ethz-asl/%s.git;%s' % (rep, revision);
+              sha1 = testTools.rev_parse('.', ('' if re.match('^[0-9a-f]+$',revision)  else 'origin/') + revision);
+          
+          checks = [(rep, sha1)];
+        else:
+          dependencies = revision
+
+        checks_code = ""
+        for c in checks :
+           checks_code += "self.checkDependency('../../src/dependencies/%s', '%s');" % c;
+        env[testTools.CheckEnvVariable] = checks_code
+
+        self._testRunBuild(['--dependencies=%s' % dependencies,  '--packages=test_package', '-s', '-n'])
+        if xunitPath:
+            self._exec(['mv', RedirectedWorkspace + '/test_results/test_package/nosetests-TestPackage.py.xml', str(os.path.join(xunitPath, inspect.stack()[1][3] + '.xml'))]);
 
     def test_parse_dependency(self):
         self._runTestShellScriptAndAssertEqualOutput('test_parse_dependency')
@@ -79,16 +89,19 @@ class TestCi(unittest.TestCase):
         self._runTestShellScriptAndAssertEqualOutput('test_rosinstall-diff')
 
     def test_simpleBranchName(self):
-        self._test_dependencies(['test_dependencies/0']);
+        self._test_dependencies('test_dependencies/0');
 
     def test_simpleSHA1(self):
-        self._test_dependencies(['0295dad96441fd2b9227caa5dbd2edfc5d438718', '0295dad96441']);
-        
+        self._test_dependencies('0295dad96441fd2b9227caa5dbd2edfc5d438718');
+
     def test_simpleGitDescribeLikeRevision(self):
-        self._test_dependencies(['notExistingTagOrBranch-32-g0295dad964']);
+        self._test_dependencies('notExistingTagOrBranch-32-g0295dad964');
 
     def test_localRosInstallFile(self):
-        self._test_dependencies([['./test_package/local.rosinstall', '0295dad96441fd2b9227caa5dbd2edfc5d438718']]);
+        self._test_dependencies(['./test_package/local.rosinstall', '0295dad96441fd2b9227caa5dbd2edfc5d438718']);
+
+    def test_localAuto(self):
+        self._test_dependencies('AUTO', [('a', '4872b6f'), ('b', '4bf5ec6'), ('c', '3fcbae4')]);
 
 if __name__ == '__main__':
     unittest.main()

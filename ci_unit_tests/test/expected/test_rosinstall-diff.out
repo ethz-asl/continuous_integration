@@ -11,3 +11,7 @@ Testing: ab vs abc
 ERROR : abc.rosinstall : b(git@github.com:ethz-asl/b.git, None) differs from b(git@github.com:ethz-asl/b.git, b) (different versions / URIs for the same local-name are not supported)
 c
 RETURNED 255
+
+Testing: ab vs workspace/test_repos/
+c
+RETURNED 0

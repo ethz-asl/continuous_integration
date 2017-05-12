@@ -67,7 +67,7 @@ case $i in
     echo "  [{-x|--prepare-system-script} run this script between cloning and building]"
     echo "  [{--niceness} niceness for the job (default $DEFAULT_NICENESS)]"
     echo "  [{-r|--roscore} start a roscore for this job]"
-    exit -1
+    exit 2
   ;;
 esac
 done
@@ -79,7 +79,7 @@ source $CI_MODULES/sanity_checks.sh
 cd $WORKSPACE
 echo "-----------------------------"
 # Locate the main folder everything is checked out into.
-REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -print -quit \) )
+REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -path "./test_repos/*" -prune -o -print -quit \) )
 if [ -n "${REP}" ]; then
   REP=$(dirname "${REP}")
   repo_url_self=$(cd "${REP}" && git config --get remote.origin.url)
@@ -217,6 +217,10 @@ then
   cat dependencies.rosinstall
   cp dependencies.rosinstall .rosinstall
   $WSTOOL_UPDATE_REPLACE
+
+elif [ "$DEPENDENCIES" == "AUTO" ]; then
+  echo "Performing AUTO dependency discovery:";
+  source $CI_MODULES/pull_auto_dependencies.sh
 else
   DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
 
@@ -260,7 +264,7 @@ if [[ -n "$PREPARE_SCRIPT" ]]; then
     (
       if ! flock -w 300 -n 9; then
         echo "Locking $LOCKFILE timed out!" >&2
-        exit -2
+        exit 3
       fi
       runPrepareScript
       rm $LOCKFILE;
@@ -297,8 +301,7 @@ if $START_ROSCORE ; then
       export DEBIAN_FRONTEND=noninteractive
       sudo apt-get install -y lsof
     else
-      echo "lsof not installed: can't scan for free port for the roscore." >&2
-      exit 1
+      fatal "lsof not installed: can't scan for free port for the roscore."
     fi
   fi
 
@@ -337,7 +340,7 @@ if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
     fi
   fi
 else
-  exit 1
+  exit $?
 fi
 
 echo "-----------------------------"
