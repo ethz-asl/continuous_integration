@@ -1,10 +1,10 @@
 if [ -z "$CI_MODULES" ]; then
-  echo "CI_MODULES not set!"
-  exit -2
+  echo "CI_MODULES not set!" 2>&1
+  exit 4
 fi
 if [ -z "$WORKSPACE" ]; then
-  echo "WORKSPACE not set!"
-  exit -2
+  echo "WORKSPACE not set!" 2>&1
+  exit 5
 fi
 
 if [ -z "$_COMMON_LOADED_" ]; then
