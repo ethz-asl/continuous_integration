@@ -171,14 +171,6 @@ if (( $NICENESS >= 10 )) ; then
 fi
 echo "-----------------------------"
 
-# Dependencies: Install using rosinstall or list of repositories from the build-job config.
-
-if $CHECKOUT_CATKIN_SIMPLE; then
-  CATKIN_SIMPLE_URL=https://github.com/catkin/catkin_simple.git
-else
-  CATKIN_SIMPLE_URL=""
-fi
-
 echo "Initialize workspace:"
 echo "-----------------------------"
 source /opt/ros/$ROS_VERSION/setup.sh
@@ -222,7 +214,9 @@ elif [ "$DEPENDENCIES" == "AUTO" ]; then
   echo "Performing AUTO dependency discovery:";
   $CI_MODULES/pull_auto_dependencies.sh
 else
-  DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
+  if $CHECKOUT_CATKIN_SIMPLE; then
+    DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
+  fi
 
   for dependency_w_branch in ${DEPENDENCIES}
   do

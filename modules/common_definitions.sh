@@ -17,7 +17,9 @@ if [ -z "$_COMMON_LOADED_" ]; then
   
   # DEPS must be below src/ !
   DEPS=src/dependencies
-    
+  
+  CATKIN_SIMPLE_URL=https://github.com/catkin/catkin_simple.git
+  
   function fatal() {
     echo "ERROR: $@" >&2
     exit 1
