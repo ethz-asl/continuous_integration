@@ -1,9 +1,11 @@
+#!/bin/bash -e
+
 source $CI_MODULES/common_definitions.sh
 
 DEP_FILE_NAME=dependencies.rosinstall
 DEP_WORKSPACE_FILE=.rosinstall
 
-IFS=$'\n' DEPS_FILES=($(find "${WORKSPACE}/src/" -maxdepth 4 -name $DEP_FILE_NAME | grep -v ${WORKSPACE}/$DEPS))
+IFS=$'\n' DEPS_FILES=($(find "${WORKSPACE}/src/" -maxdepth 4 -name $DEP_FILE_NAME | grep -Fv "^${WORKSPACE}/$DEPS/"))
 
 if [[ ${#DEPS_FILES[@]} -eq 0 ]]; then
   fatal "DEPENDENCIES = $DEPENDENCIES, but could not find any $DEP_FILE_NAME within ${WORKSPACE}/src/"
