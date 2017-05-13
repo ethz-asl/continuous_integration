@@ -3,7 +3,7 @@ export PATH=/usr/local/bin/:$PATH
 
 # Get the directory of this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_MODULES=$DIR/modules
+export CI_MODULES=$DIR/modules
 
 # "Setup common functions and definitions and source current ROS"
 source $CI_MODULES/common_definitions.sh
@@ -220,7 +220,7 @@ then
 
 elif [ "$DEPENDENCIES" == "AUTO" ]; then
   echo "Performing AUTO dependency discovery:";
-  source $CI_MODULES/pull_auto_dependencies.sh
+  $CI_MODULES/pull_auto_dependencies.sh
 else
   DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
 
