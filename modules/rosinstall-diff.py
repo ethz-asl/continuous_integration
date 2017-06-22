@@ -70,7 +70,7 @@ else:
     if baseMap.has_key(ue.getId()):
       old = baseMap[ue.getId()]
       if not old == ue:
-        print ("ERROR : %s : %s differs from %s (different versions / URIs for the same local-name are not supported)" % (updateFile, old, ue), file = sys.stderr)
+        print ("ERROR : %s : %s differs from former %s : %s (different versions / URIs for the same local-name are not supported)" % (updateFile, ue, baseFile, old), file = sys.stderr)
         errorCout+=1
     else:
       print(ue.getId())
