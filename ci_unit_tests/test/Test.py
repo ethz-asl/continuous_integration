@@ -8,6 +8,9 @@ import re
 
 TestDir = os.getcwd()
 sys.path.append(TestDir)
+p = os.path.join(TestDir, "../../modules")
+print("p=", p)
+sys.path.append(p)
 
 Workspace = TestDir + '/workspace';
 RedirectedWorkspace = '/tmp/ci_unit_tests/workspace';
@@ -84,6 +87,13 @@ class TestCi(unittest.TestCase):
 
     def test_parse_dependency(self):
         self._runTestShellScriptAndAssertEqualOutput('test_parse_dependency')
+ 
+    def test_rosinstall_entry(self):
+        from rosinstall_diff import Entry
+        def createEntry(uri, local_name = "foo"):
+          return Entry({'foo': {'local-name' : local_name, 'uri' : uri}})
+        self.assertNotEqual(createEntry("https://github.com/ethz-asl/bla"), createEntry("glog_catkin(https://github.com/ethz-asl/blupp"))
+        self.assertEqual(createEntry("https://github.com/ethz-asl/glog_catkin.git"), createEntry("https://github.com/ethz-asl/glog_catkin"))
 
     def test_rosinstall_diff(self):
         self._runTestShellScriptAndAssertEqualOutput('test_rosinstall_diff')
