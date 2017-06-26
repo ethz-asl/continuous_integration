@@ -20,7 +20,7 @@ while true; do
   new_packages=()
   for dep_file in "${DEPS_FILES[@]}"; do
     echo "Processing dependency file $dep_file"
-    IFS=$'\n' np=($($CI_MODULES/rosinstall-diff.py $DEP_WORKSPACE_FILE $dep_file))
+    IFS=$'\n' np=($($CI_MODULES/rosinstall_diff.py $DEP_WORKSPACE_FILE $dep_file))
     IFS="$normalIFS"
     if [ -n "$np" ] ; then echo "Found new packages: ${np[@]}."; fi
     new_packages+=("${np[@]}")
@@ -36,7 +36,7 @@ done
 
 unset new_packages
 
-IFS=$'\n' all_superfluous_local_names=($($CI_MODULES/rosinstall-diff.py $DEP_WORKSPACE_FILE ${WORKSPACE}/$DEPS/))
+IFS=$'\n' all_superfluous_local_names=($($CI_MODULES/rosinstall_diff.py $DEP_WORKSPACE_FILE ${WORKSPACE}/$DEPS/))
 IFS="$normalIFS"
 
 if [ -n "$all_superfluous_local_names" ]; then
