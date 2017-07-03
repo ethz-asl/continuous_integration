@@ -22,6 +22,12 @@ cd $WORKSPACE
 export ROS_WS=$WORKSPACE/ros_ws
 rm -rf $ROS_WS
 mkdir -p $ROS_WS
+
+
+if ! command -v rosws > /dev/null ; then
+  sudo apt-get install -y python-rosinstall
+fi
+
 rosws init $ROS_WS /opt/ros/$ROS_VERSION
 
 for package in $(find ./* -type d)
