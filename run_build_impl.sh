@@ -3,10 +3,10 @@ export PATH=/usr/local/bin/:$PATH
 
 # Get the directory of this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export CI_MODULES=$DIR/modules
+export CI_MODULES="$DIR/modules"
 
 # "Setup common functions and definitions and source current ROS"
-source $CI_MODULES/common_definitions.sh
+source "$CI_MODULES/common_definitions.sh"
 
 PACKAGE="--all"
 DEPENDENCIES=""
@@ -73,10 +73,10 @@ esac
 done
 
 # run sanity checks:
-source $CI_MODULES/sanity_checks.sh
+source "$CI_MODULES/sanity_checks.sh"
 
 # Find workspace
-cd $WORKSPACE
+cd "$WORKSPACE"
 echo "-----------------------------"
 # Locate the main folder everything is checked out into.
 REP=$(find . -maxdepth 3 -type d -name .git -a \( -path "./$DEPS/*" -prune -o -path "./test_repos/*" -prune -o -print -quit \) )
@@ -175,20 +175,20 @@ echo "Initialize workspace:"
 echo "-----------------------------"
 source /opt/ros/$ROS_VERSION/setup.sh
 
-cd $WORKSPACE/
-mkdir -vp $WORKSPACE/src
+cd "$WORKSPACE/"
+mkdir -vp "$WORKSPACE/src"
 catkin init
 echo "-----------------------------"
 
 echo "Pull dependencies:"
 echo "-----------------------------"
-mkdir -vp $WORKSPACE/$DEPS
-cd $WORKSPACE/$DEPS
+mkdir -vp "$WORKSPACE/$DEPS"
+cd "$WORKSPACE/$DEPS"
 
 if [[ $DEPENDENCIES == *.rosinstall ]]
 then
   CHECKOUT_ASLAM_INSTALL=true
-  source $CI_MODULES/prepare_wstool_workspace.sh
+  source "$CI_MODULES/prepare_wstool_workspace.sh"
 
   for dep in $DEPENDENCIES; do
     # Remove the entry from the provided rosinstall that specifies this repository itself (if any).
@@ -212,7 +212,7 @@ then
 
 elif [ "$DEPENDENCIES" == "AUTO" ]; then
   echo "Performing AUTO dependency discovery:";
-  $CI_MODULES/pull_auto_dependencies.sh
+  "$CI_MODULES/pull_auto_dependencies.sh"
 else
   if $CHECKOUT_CATKIN_SIMPLE; then
     DEPENDENCIES="${DEPENDENCIES} ${CATKIN_SIMPLE_URL}"
@@ -220,9 +220,9 @@ else
 
   for dependency_w_branch in ${DEPENDENCIES}
   do
-    cd $WORKSPACE/$DEPS
+    cd "$WORKSPACE/$DEPS"
     
-    source $CI_MODULES/parse_dependency.sh
+    source "$CI_MODULES/parse_dependency.sh"
 
     if [ -d $foldername ]; then
       echo "Package $foldername exists, running: git fetch $depth_args && git checkout ${revision} && git submodule update --recursive"
@@ -242,12 +242,12 @@ echo "-----------------------------"
 if [[ -n "$PREPARE_SCRIPT" ]]; then
   echo "Run prepare script:"
   echo "-----------------------------"
-  cd $WORKSPACE
+  cd "$WORKSPACE"
 
   function runPrepareScript() {
     export DEBIAN_FRONTEND=noninteractive
     echo "Running $PREPARE_SCRIPT in $WORKSPACE:";
-    bash -ex $PREPARE_SCRIPT
+    bash -ex "$PREPARE_SCRIPT"
     echo "Successfully run $PREPARE_SCRIPT.";
   }
 
@@ -273,7 +273,7 @@ fi
 
 echo "Build workspace:"
 echo "-----------------------------"
-cd $WORKSPACE
+cd "$WORKSPACE"
 
 # Prepare cppcheck ignore list. We want to skip dependencies.
 CPPCHECK_PARAMS="src --xml --enable=missingInclude,performance,style,portability,information -j8 -ibuild -i$DEPS"
@@ -327,7 +327,7 @@ if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${PACKAGES}; then
   if [[ "$unamestr" == 'Linux' ]]; then
     echo "Running cppcheck $CPPCHECK_PARAMS ..."
     # Run cppcheck excluding dependencies.
-    cd $WORKSPACE
+    cd "$WORKSPACE"
     if $RUN_CPPCHECK; then
       rm -f cppcheck-result.xml
       cppcheck $CPPCHECK_PARAMS 2> cppcheck-result.xml
