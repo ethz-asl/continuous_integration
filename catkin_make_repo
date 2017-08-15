@@ -11,7 +11,13 @@ RUN_TESTS=$1
 PACKAGES=${*:2}
 
 MAKE_ARGS="-j5 VERBOSE=1"
-CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT"
+
+#CMake variables CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY and CMAKE_EXPORT_NO_PACKAGE_REGISTRY prevent usage of the user package registry. No build should rely on it!
+CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON"
+
+#For those workers with CMAKE older than 3.1: purge the registry before every build. See also a few lines above.
+#TODO (after removing trusty slaves) : remove this hack
+rm -rf ~/.cmake/packages
 
 if [ -e ~/local.catkin_make_repo.settings.sh ]; then
   echo "Reading settings from local.catkin_make_repo.settings.sh:" 
