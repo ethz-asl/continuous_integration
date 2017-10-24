@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ignored_test_pkg)
+project(ignored_test_thirdparty)
 
 find_package(catkin_simple REQUIRED)
 catkin_simple(ALL_DEPS_REQUIRED)

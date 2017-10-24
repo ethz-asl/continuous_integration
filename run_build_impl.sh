@@ -104,6 +104,8 @@ if [ -z "$PACKAGES" ]; then
       echo "Skipping package $package since the package contains CATKIN_IGNORE."
     elif [ -f "${pkg_path}/CI_IGNORE" ]; then
       echo "Skipping package $package since the package contains CI_IGNORE."
+    elif [[ ${pkg_path} == *"thirdparty"* ]]; then
+      echo "Skipping package $package because its path contains 'thirdparty'."
     elif ! echo $package | grep -qxFf ./all_catkin_packages_in_src.list; then
       echo "Skipping package $package because 'catkin list' did not find it!"
     else
