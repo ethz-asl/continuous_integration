@@ -10,7 +10,7 @@ fi
 if [ -z "$_COMMON_LOADED_" ]; then
   _COMMON_LOADED_=true
 
-  ROS_VERSION=$(source $CI_MODULES/get_latest_ros_version.sh)
+  ROS_VERSION=$(source "$CI_MODULES/get_latest_ros_version.sh")
   
   # Source current ROS
   source /opt/ros/$ROS_VERSION/setup.sh
@@ -28,10 +28,20 @@ if [ -z "$_COMMON_LOADED_" ]; then
     echo "WARNING: $@" >&2
   }
   
-  WSTOOL_MERGE_REPLACE="wstool merge --confirm-all --merge-replace -t $WORKSPACE/$DEPS"
-  function wstoolUpdateReplace () {
-    wstool status -t $WORKSPACE/$DEPS
-    wstool update --delete-changed-uris -t $WORKSPACE/$DEPS -j1 "$@"
+  function wstoolMergeReplace () {
+    (
+      cd "$WORKSPACE" ## wstool has a bug concerning spaces in the -t arg 
+      wstool merge --confirm-all --merge-replace -t "$DEPS" "$@"
+    )
   }
-  WSTOOL_UPDATE_REPLACE="wstoolUpdateReplace"
+  WSTOOL_MERGE_REPLACE=wstoolMergeReplace
+
+  function wstoolUpdateReplace () {
+    (
+      cd "$WORKSPACE" ## wstool has a bug concerning spaces in the -t arg
+      wstool status -t "$DEPS"
+      wstool update --delete-changed-uris -t "$DEPS" -j1 "$@"
+    )
+  }
+  WSTOOL_UPDATE_REPLACE=wstoolUpdateReplace
 fi

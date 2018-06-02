@@ -1,9 +1,9 @@
 #!/bin/bash -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_MODULES=$DIR/modules
+CI_MODULES="$DIR/modules"
 
 # "Setup common functions and definitions and source current ROS"
-source $CI_MODULES/common_definitions.sh
+source "$CI_MODULES/common_definitions.sh"
 
 export PATH=/usr/texbin/:/usr/lib/ccache:/usr/local/bin/:/usr/local/opt/ccache/libexec/:$PATH
 
@@ -29,7 +29,7 @@ if [ -n "$TERM" ] ; then
   export TERM=xterm
 fi
 
-mkdir -p $WORKSPACE/devel/include
+mkdir -p "$WORKSPACE/devel/include"
 
 echo Checking whether we should run the tests...
 if $RUN_TESTS; then
@@ -51,22 +51,22 @@ fi
 
 if $RUN_TESTS; then
   echo "*** sourcing the devel space"
-  source $WORKSPACE/devel/setup.bash
+  source "$WORKSPACE/devel/setup.bash"
   # Clear out results from the requested packages.
-  TEST_RESULTS_FOLDER=$WORKSPACE/build/test_results
-  rm -rf $TEST_RESULTS_FOLDER
-  mkdir $TEST_RESULTS_FOLDER
+  TEST_RESULTS_FOLDER="$WORKSPACE/build/test_results"
+  rm -rf "$TEST_RESULTS_FOLDER"
+  mkdir "$TEST_RESULTS_FOLDER"
 
   echo "*** building tests"
-  catkin build -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES --make-args tests $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
+  catkin build -w "$WORKSPACE" --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES --make-args tests $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
 
   echo "*** running tests"
-  catkin run_tests -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES -j1
+  catkin run_tests -w "$WORKSPACE" --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES -j1
 
   # Collect the results files
   for PACKAGE in $PACKAGES
   do
-    PACKAGE_TEST_RESULTS_FOLDER=$WORKSPACE/build/$PACKAGE/test_results/$PACKAGE
+    PACKAGE_TEST_RESULTS_FOLDER="$WORKSPACE/build/$PACKAGE/test_results/$PACKAGE"
     if [ -d $PACKAGE_TEST_RESULTS_FOLDER ] ; then
         echo "*** $PACKAGE -- Copy unit test results to common folder."
         cp -r $PACKAGE_TEST_RESULTS_FOLDER $TEST_RESULTS_FOLDER/ || true
@@ -76,13 +76,13 @@ if $RUN_TESTS; then
   done
 
   # Clear / Create a directory in the workspace where we can store the test results.
-  TEST_RESULTS_DEST=$WORKSPACE/test_results/
-  rm -rf $TEST_RESULTS_DEST
-  mkdir -p $TEST_RESULTS_DEST
+  TEST_RESULTS_DEST="$WORKSPACE/test_results/"
+  rm -rf "$TEST_RESULTS_DEST"
+  mkdir -p "$TEST_RESULTS_DEST"
 
   # Copy all test results from the currently build packages to the workspace folder.
   echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
-  cp -vr $TEST_RESULTS_FOLDER/* $TEST_RESULTS_DEST/ || true
+  cp -vr "$TEST_RESULTS_FOLDER/"* "$TEST_RESULTS_DEST/" || true
 fi
 
 exit 0

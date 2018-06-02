@@ -1,7 +1,7 @@
 # Make a separate workspace for the deps, so we can exclude them from cppcheck etc.
 echo "Dependencies specified by rosinstall file.";
-rm -f $WORKSPACE/$DEPS/.rosinstall || true # start fresh workspace so reduce double updates
-wstool init $WORKSPACE/$DEPS || true
+rm -f "$WORKSPACE/$DEPS/.rosinstall" || true # start fresh workspace so reduce double updates
+wstool init "$WORKSPACE/$DEPS" || true
 
 
 if $CHECKOUT_ASLAM_INSTALL; then

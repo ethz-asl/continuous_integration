@@ -1,9 +1,9 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_MODULES=$DIR/modules
+CI_MODULES="$DIR/modules"
 
 # "Setup common functions and definitions and source current ROS"
-source $CI_MODULES/common_definitions.sh
+source "$CI_MODULES/common_definitions.sh"
 
 export PATH=/usr/lib/ccache:$PATH
 
@@ -18,8 +18,8 @@ else
 fi
 
 
-cd $WORKSPACE
-export ROS_WS=$WORKSPACE/ros_ws
+cd "$WORKSPACE"
+export ROS_WS="$WORKSPACE/ros_ws"
 rm -rf $ROS_WS
 mkdir -p $ROS_WS
 
@@ -40,7 +40,7 @@ do
       rosws set ../$package -y
     fi
   fi
-  cd $WORKSPACE
+  cd "$WORKSPACE"
 done
 source $ROS_WS/setup.bash
 source $ROS_WS/setup.sh
@@ -60,21 +60,21 @@ if $RUN_TESTS; then
   for package in ${PACKAGES}
   do
       echo "Clearing test results in $TEST_RESULTS_FOLDER/$package ..."
-      rm -rf $TEST_RESULTS_FOLDER/$package
+      rm -rf "$TEST_RESULTS_FOLDER/$package"
   done
   # Run the tests. Don't fail if the tests fail, we will parse their results later.
   rosmake ${PACKAGES} -Vk --test-only
 
   # Clear / Create a directory in the workspace where we can store the test results.
-  TEST_RESULTS_DEST=$WORKSPACE/test_results/
-  rm -rf $TEST_RESULTS_DEST
-  mkdir -p $TEST_RESULTS_DEST
+  TEST_RESULTS_DEST="$WORKSPACE/test_results/"
+  rm -rf "$TEST_RESULTS_DEST"
+  mkdir -p "$TEST_RESULTS_DEST"
   for package in ${PACKAGES}
   do
       # Copy all test results from the currently build packages to the workspace folder.
       echo "Copying test results from $TEST_RESULTS_FOLDER/$package to $TEST_RESULTS_DEST..."
-      mkdir -p $TEST_RESULTS_DEST/$package/
+      mkdir -p "$TEST_RESULTS_DEST/$package/"
       # Only copy rosunit xml files.
-      cp -r $TEST_RESULTS_FOLDER/$package/rosunit* $TEST_RESULTS_DEST/$package/ || true
+      cp -r "$TEST_RESULTS_FOLDER/$package/rosunit"* "$TEST_RESULTS_DEST/$package/" || true
   done
 fi
