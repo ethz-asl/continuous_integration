@@ -175,7 +175,7 @@ echo "-----------------------------"
 
 echo "Initialize workspace:"
 echo "-----------------------------"
-source /opt/ros/$ROS_VERSION/setup.sh
+source /opt/ros/$ROS_VERSION_NAME/setup.sh
 
 cd $WORKSPACE/
 mkdir -vp $WORKSPACE/src
