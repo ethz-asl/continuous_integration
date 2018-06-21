@@ -10,10 +10,10 @@ fi
 if [ -z "$_COMMON_LOADED_" ]; then
   _COMMON_LOADED_=true
 
-  ROS_VERSION=$(source $CI_MODULES/get_latest_ros_version.sh)
+  ROS_VERSION_NAME=$(source $CI_MODULES/get_latest_ros_version.sh)
   
   # Source current ROS
-  source /opt/ros/$ROS_VERSION/setup.sh
+  source /opt/ros/$ROS_VERSION_NAME/setup.sh
   
   # DEPS must be below src/ !
   DEPS=src/dependencies
