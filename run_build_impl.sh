@@ -12,8 +12,8 @@ PACKAGE="--all"
 DEPENDENCIES=""
 COMPILER="gcc"
 RUN_TESTS=true
-DEFAULT_NUM_TEST_THREADS=1
-NUM_TEST_THREADS=$DEFAULT_NUM_TEST_THREADS
+DEFAULT_NUM_PARALLEL_TEST_JOBS=1
+NUM_PARALLEL_TEST_JOBS=$DEFAULT_NUM_PARALLEL_TEST_JOBS
 RUN_CPPCHECK=true
 MERGE_DEVEL=true
 CHECKOUT_CATKIN_SIMPLE=true
@@ -57,8 +57,8 @@ case $i in
   -r|--roscore)
     START_ROSCORE=true
   ;;
-  --num_test_threads=*)
-    NUM_TEST_THREADS="${i#*=}"
+  --num_parallel_test_jobs=*)
+    NUM_PARALLEL_TEST_JOBS="${i#*=}"
   ;;
     *)
     echo "Unknown option: $i!" >&2
@@ -71,7 +71,7 @@ case $i in
     echo "  [{-s|--no_catkinsimple} skip checking out catkin simple]"
     echo "  [{-x|--prepare-system-script} run this script between cloning and building]"
     echo "  [{--niceness} niceness for the job (default $DEFAULT_NICENESS)]"
-    echo "  [{--num_test_threads} number of threads available to the unit test job server (default $DEFAULT_NUM_TEST_THREADS)]"
+    echo "  [{--num_parallel_test_jobs} maximum number of parallel unit tests executed (default $DEFAULT_NUM_PARALLEL_TEST_JOBS)]"
     echo "  [{-r|--roscore} start a roscore for this job]"
     exit 2
   ;;
@@ -138,7 +138,7 @@ echo "Run cppcheck: ${RUN_CPPCHECK}"
 echo "Checkout catkin simple: ${CHECKOUT_CATKIN_SIMPLE}"
 echo "Run prepare script: ${PREPARE_SCRIPT}"
 echo "CATKIN_ARGS: ${CATKIN_ARGS}"
-echo "NUM_TEST_THREADS: ${NUM_TEST_THREADS}"
+echo "NUM_PARALLEL_TEST_JOBS: ${NUM_PARALLEL_TEST_JOBS}"
 echo "-----------------------------"
 
 # If we are on a mac we only support Apple Clang for now.
@@ -332,7 +332,7 @@ if $START_ROSCORE ; then
 fi
 
 #Now run the build.
-if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${NUM_TEST_THREADS} ${PACKAGES}; then
+if $DIR/run_build_catkin_or_rosbuild ${RUN_TESTS} ${NUM_PARALLEL_TEST_JOBS} ${PACKAGES}; then
   if [[ "$unamestr" == 'Linux' ]]; then
     echo "Running cppcheck $CPPCHECK_PARAMS ..."
     # Run cppcheck excluding dependencies.

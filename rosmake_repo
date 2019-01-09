@@ -8,7 +8,7 @@ source $CI_MODULES/common_definitions.sh
 export PATH=/usr/lib/ccache:$PATH
 
 RUN_TESTS=$1
-NUM_TEST_THREADS=$2
+NUM_PARALLEL_TEST_JOBS=$2
 PACKAGES=${*:3}
 
 echo Checking whether we should run the tests...
