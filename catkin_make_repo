@@ -8,7 +8,8 @@ source $CI_MODULES/common_definitions.sh
 export PATH=/usr/texbin/:/usr/lib/ccache:/usr/local/bin/:/usr/local/opt/ccache/libexec/:$PATH
 
 RUN_TESTS=$1
-PACKAGES=${*:2}
+NUM_TEST_THREADS=$2
+PACKAGES=${*:3}
 
 MAKE_ARGS="-j5 VERBOSE=1"
 
@@ -61,7 +62,7 @@ if $RUN_TESTS; then
   catkin build -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES --make-args tests $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
 
   echo "*** running tests"
-  catkin run_tests -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES -j1
+  catkin run_tests -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES -j$NUM_TEST_THREADS
 
   # Collect the results files
   for PACKAGE in $PACKAGES
