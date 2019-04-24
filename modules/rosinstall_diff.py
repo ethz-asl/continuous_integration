@@ -5,14 +5,15 @@ from __future__ import print_function
 import sys
 import yaml
 from os.path import isdir, samefile
-from operator import __eq__
 
 import re
 
 dotGitSuffix = re.compile(".git$")
 
+
 def normalizeGithubUrls(uri):
   return dotGitSuffix.sub("", uri)
+
 
 def readRosinstallFile(fileName):
   with open(fileName) as f:
@@ -20,16 +21,17 @@ def readRosinstallFile(fileName):
     data = yaml.safe_load(f)
     return data if data is not None else []
 
+
 class Entry():
   def __init__(self, entry):
     keys = entry.keys()
     assert len(keys) == 1
-    self.vcs = keys[0];
+    self.vcs = keys[0]
     props = entry[self.vcs]
     self.local_name = props['local-name']
     self.version = props['version'] if props.has_key('version') else None
     self.uri = props['uri']
-    
+
   def __eq__(self, other):
     if isinstance(other, self.__class__):
       if self.uri != other.uri:
@@ -38,7 +40,7 @@ class Entry():
             return self.version == other.version
         if ":" in self.uri + other.uri:
           return False
-        else : # local file?
+        else:  # local file?
           if not samefile(self.uri, other.uri):
             return False
       return self.local_name == other.local_name and self.version == other.version
@@ -58,28 +60,28 @@ class Entry():
 if __name__ == "__main__":
   baseFile = sys.argv[1]
   updateFile = sys.argv[2]
-  
+
   baseRosinstallData = readRosinstallFile(baseFile) if baseFile != "NONE" else []
   baseEntries = [Entry(e) for e in baseRosinstallData]
-  baseMap={ e.getId() : e for e in baseEntries }
-  
+  baseMap = {e.getId(): e for e in baseEntries}
+
   errorCout = 0
   if updateFile[-1] == "/":
     from os import listdir
-    from os.path import isdir, join
+    from os.path import join
     if not isdir(updateFile):
-      print ("ERROR : %s is no directory)" % (updateFile), file = sys.stderr)
+      print ("ERROR : %s is no directory)" % (updateFile), file=sys.stderr)
       sys.exit(3)
-  
+
     for f in listdir(updateFile):
-      if f and f[0] != '.' and isdir(join(updateFile, f)) and not baseMap.has_key(f):
+      if f and f[0] != '.' and isdir(join(updateFile, f)) and f not in baseMap:
         print(f)
   else:
     updateFileData = readRosinstallFile(updateFile) if updateFile != "LOCAL" else []
     updateEntries = [Entry(e) for e in updateFileData]
-    
+
     for ue in updateEntries:
-      if baseMap.has_key(ue.getId()):
+      if ue.getId() in baseMap:
         old = baseMap[ue.getId()]
         if not old == ue:
           print ("ERROR : %s : %s differs from former %s : %s (different versions / URIs for the same local-name are not supported)" % (updateFile, ue, baseFile, old), file = sys.stderr)
