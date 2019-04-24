@@ -10,9 +10,10 @@ from operator import __eq__
 import re
 
 dotGitSuffix = re.compile(".git$")
+githubSshUri = re.compile(r"^git@github.com:")
 
 def normalizeGithubUrls(uri):
-  return dotGitSuffix.sub("", uri)
+  return githubSshUri.sub("https://github.com/", dotGitSuffix.sub("", uri))
 
 def readRosinstallFile(fileName):
   with open(fileName) as f:
