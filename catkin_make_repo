@@ -15,13 +15,13 @@ N_THREADS=0
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   N_THREADS=$((`nproc`))
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-  N_THREADS=$((`sysctl -n hw.ncpu`+1))
+  N_THREADS=$((`sysctl -n hw.ncpu`))
 else
   echo "Unknown operating system."
   exit
 fi
-echo "Building with $(N_THREADS+1) threads."
-MAKE_ARGS="-j$(N_THREADS+1) VERBOSE=1"
+echo "Building with $((N_THREADS+1)) threads."
+MAKE_ARGS="-j$((N_THREADS+1)) VERBOSE=1"
 
 #CMake variables CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY and CMAKE_EXPORT_NO_PACKAGE_REGISTRY prevent usage of the user package registry. No build should rely on it!
 CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON"
