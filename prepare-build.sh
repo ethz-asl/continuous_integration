@@ -7,6 +7,7 @@ if [[ "$DEBIAN_FRONTEND" != noninteractive ]] ;then
 fi
 
 if [[ $(uname) == "Linux" ]]; then
+  sudo dpkg --configure -a
   sudo apt-get install -y git imagemagick rsync
 else
   echo "Platform $(uname) is not supported! Go away!"
