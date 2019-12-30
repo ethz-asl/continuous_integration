@@ -69,7 +69,7 @@ if $RUN_TESTS; then
   mkdir $TEST_RESULTS_FOLDER
 
   echo "*** building tests"
-  catkin build -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES --make-args tests $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT
+  catkin build -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES --make-args tests $MAKE_ARGS --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-DALWAYS_ASSERT -DCMAKE_C_FLAGS=-DALWAYS_ASSERT -DBUILD_TEST=True
 
   echo "*** running tests"
   catkin run_tests -w  $WORKSPACE --verbose --no-deps --no-status $CATKIN_ARGS $PACKAGES -j$NUM_PARALLEL_TEST_JOBS
