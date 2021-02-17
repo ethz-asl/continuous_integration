@@ -270,7 +270,6 @@ if [[ -n "$PREPARE_SCRIPT" ]]; then
         exit 3
       fi
       runPrepareScript
-      rm $LOCKFILE;
     ) 9>$LOCKFILE
   else
     echo "WARNING going to run prepare script on a crippled UNIX ($unamestr) : no /var/lock or flock available and therefore no exclusive run!" >&2
