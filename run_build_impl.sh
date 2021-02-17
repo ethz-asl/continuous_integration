@@ -265,12 +265,11 @@ if [[ -n "$PREPARE_SCRIPT" ]]; then
     LOCKFILE=/var/lock/jenkins-prepare-script.lock
     echo "Acquiring prepare script lock $LOCKFILE";
     (
-      if ! flock -w 300 -n 9; then
+      if ! flock -w 300 9; then
         echo "Locking $LOCKFILE timed out!" >&2
         exit 3
       fi
       runPrepareScript
-      rm $LOCKFILE;
     ) 9>$LOCKFILE
   else
     echo "WARNING going to run prepare script on a crippled UNIX ($unamestr) : no /var/lock or flock available and therefore no exclusive run!" >&2
